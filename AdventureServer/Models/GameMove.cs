@@ -7,7 +7,7 @@ namespace AdventureServer.Models
 {
     public class GameMove
     {
-        public long InstanceID { get; set; }
+        public string InstanceID { get; set; }
         public string Move { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
-@{
-    Layout = "_PALayout.cshtml";
-}
+@model AdventureServer.Models.PlayGameVM
+@{ Layout = "_PALayout.cshtml"; }
+
 <body>
     <script type="text/javascript">
         window.onload = function () {
@@ -12,13 +12,15 @@
             textbox.scrollIntoView();
         };
     </script>
-    <p><strong>@ViewBag.RoomName</strong></p>
+    <p><strong>@Model.RoomName</strong></p>
     <br />
     <form name="commandprocessor" action="/playadventure" method="Post">
 <textarea readonly name="buffer">
-@ViewBag.Buffer &#13;&#10
-@ViewBag.Message &#13;&#10
-@ViewBag.Items
+
+@Model.Buffer &#13;&#10
+@Model.Message  &#13;&#10
+@Model.Items
+
 </textarea><br />
         &gt; <input name="command" type="text" autofocus autocomplete="on" />
     </form>
@@ -26,7 +28,7 @@
 
      <!-- 
     <p>
-        Hello @ViewBag.Player!, You are feeling @ViewBag.HealthReport
+        Hello @Model.GamerTag !, You are feeling @Model.HealthReport
     </p>
     <br />
          -->

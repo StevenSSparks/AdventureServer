@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AdventureServer.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,11 +26,17 @@ namespace AdventureServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddControllers();
+          
+            services.AddMvc(options => options.EnableEndpointRouting = false)
+                .AddControllersAsServices(); // this adds the controllers as services to all for DI to resolve them 
 
-            services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddSession();
             services.AddSwaggerDocument();
+
+            // adventure sever framework
+            services.AddSingleton<IPlayAdventure, AdventureFramework>();
+            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
