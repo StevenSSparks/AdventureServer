@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = "_PALayout.cshtml";
+}
+<body>
+    <script type="text/javascript">
+        window.onload = function () {
+            document.getElementsByName('buffer')[0].scrollTop = document.getElementsByName('buffer')[0].scrollHeight;
+
+            var textbox = document.getElementById("command");
+            textbox.focus();
+            textbox.scrollIntoView();
+        };
+    </script>
+    <p><strong>@ViewBag.RoomName</strong></p>
+    <br />
+    <form name="commandprocessor" action="/playadventure" method="Post">
+<textarea readonly name="buffer">
+@ViewBag.Buffer &#13;&#10
+@ViewBag.Message &#13;&#10
+@ViewBag.Items
+</textarea><br />
+        &gt; <input name="command" type="text" autofocus autocomplete="on" />
+    </form>
+    
+
+     <!-- 
+    <p>
+        Hello @ViewBag.Player!, You are feeling @ViewBag.HealthReport
+    </p>
+    <br />
+         -->
+
+</body>
+
+
