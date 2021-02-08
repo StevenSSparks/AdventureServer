@@ -21,5 +21,6 @@ namespace AdventureServer.Models
         public List<Room> Rooms;
         public Boolean GameActive = false;
         public List<string> PointsCheckList;
+
     }
 }

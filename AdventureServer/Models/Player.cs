@@ -15,6 +15,7 @@ namespace AdventureServer.Models
         public int Steps { get; set; }
         public bool Verbose { get; set; }
         public int Points { get; set; }
+        
 
     }
 }
