@@ -26,9 +26,9 @@ namespace AdventureServer
         private void AddPlayAdventureToCache(PlayAdventure p)
         {
 
-          var cacheEntryOptions = new MemoryCacheEntryOptions()
-            // Keep in cache for this time, reset time if accessed.
-            .SetSlidingExpiration(TimeSpan.FromMinutes(8 * 60)); //  8 hours
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+              // Keep in cache for this time, reset time if accessed.
+              .SetSlidingExpiration(TimeSpan.FromMinutes(8 * 60)); //  8 hours
 
             _ = _gameCache.Set(p.InstanceID, p, cacheEntryOptions);
 
@@ -49,7 +49,7 @@ namespace AdventureServer
 
         private void RemovePlayAdventureFromCache(string key)
         {
-           _gameCache.Remove(key);
+            _gameCache.Remove(key);
 
         }
 
@@ -80,7 +80,7 @@ namespace AdventureServer
         public PlayAdventure GetInstanceObject(string InstanceId)
         {
 
-            PlayAdventure playAdventure  = GetPlayAdventureFromCache(InstanceId);
+            PlayAdventure playAdventure = GetPlayAdventureFromCache(InstanceId);
             if (playAdventure.InstanceID == null)
             {
                 playAdventure.StartRoom = -1;
@@ -150,7 +150,7 @@ namespace AdventureServer
                 PlayerName = p.Player.Name,
                 HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax),
             };
-          
+
         }
         #endregion Game Management 
 
@@ -241,60 +241,59 @@ namespace AdventureServer
 
         #region Game Command Parse
 
-        CommandState GetCommandState (GameMove gm)
+        CommandState GetCommandState(GameMove gm)
         {
 
             return new CommandState();
         }
 
-        private CommandState CheckForSingleWordMove (string direction)
+        private CommandState ConvertShortMove(string direction)
         {
             var cmd = direction.Trim();
             var cs = new CommandState // setup with assumed move details
             {
                 Valid = true,
                 RawCommand = direction,
-                Command = "Go"
+                Command = "go",
+                Modifier = "",
+                Message = ""
             };
 
-            if (cmd.Length == 1)
+            switch (direction)
             {
-                if (cmd.Contains("n")) cs.Modifier = "north";
-                else if (cmd.Contains("s")) cs.Modifier = "south";
-                else if (cmd.Contains("e")) cs.Modifier = "east";
-                else if (cmd.Contains("w")) cs.Modifier = "west";
-                else if (cmd.Contains("u")) cs.Modifier = "up";
-                else if (cmd.Contains("d")) cs.Modifier = "down";
-                else
-                {
+                case "n":
+                case "nor":
+                    cs.Modifier = "north";
+                    break;
+                case "s":
+                case "sou":
+                    cs.Modifier = "south";
+                    break;
+                case "e":
+                case "eas":
+                    cs.Modifier = "east";
+                    break;
+                case "w":
+                case "wes":
+                    cs.Modifier = "west";
+                    break;
+                case "u":
+                case "up":
+                    cs.Modifier = "up";
+                    break;
+                case "d":
+                case "dow":
+                    cs.Modifier = "down";
+                    break;
+                default :
+                    cs.Message = "Wrong Way!";
                     cs.Valid = false;
-                    cs.Command = "";
-                    cs.Modifier = "";
-                    cs.Message = "That is not a valid move command.";
-                }
+                    break;
             }
-
-            if (cmd.Length == 3)
-            {
-                if (cmd.Contains("nor")) cs.Modifier = "north";
-                else if (cmd.Contains("sou")) cs.Modifier = "south";
-                else if (cmd.Contains("eas")) cs.Modifier = "east";
-                else if (cmd.Contains("wes")) cs.Modifier = "west";
-                else if (cmd.Contains("up")) cs.Modifier = "up";
-                else if (cmd.Contains("dow")) cs.Modifier = "down";
-                else
-                {
-                    cs.Valid = false;
-                    cs.Command = "";
-                    cs.Modifier = "";
-                    cs.Message = "That is not a valid move command.";
-                }
-            }
-
 
             return cs;
         }
-                
+
         private CommandState ParseCommand(GameMove gm)
         {
             // Parse the command
@@ -306,7 +305,7 @@ namespace AdventureServer
 
             //take the first 2 that are not empty 
             int cnt = 0;
-            foreach(string s in cList)
+            foreach (string s in cList)
             {
                 if (s.Trim() != "") { cmds.Add(s.ToLower()); cnt++; }
                 if (cnt == 2) { break; }
@@ -373,7 +372,7 @@ namespace AdventureServer
             var p = GetInstanceObject(move.InstanceID);
 
             //setup the intial response message and result
-            string actionMessage = "You can't do that here.\r\n";
+            string actionMessage = "Please try that again. ";
 
             var gmr = new GameMoveResult
             {
@@ -386,37 +385,70 @@ namespace AdventureServer
 
             //parse the command 
             cs = ParseCommand(move);
+            bool playermoved;
 
-            if (cs.Command == "go")
+            (playermoved, gmr, p, cs) = DidPlayerMove(p, gmr, cs);
+
+            if (playermoved)
             {
-                // if the player types go north - verse n or nor we will parse and convert to the short command
-                var ml = new List<string> { "north", "south", "east", "west", "up", "down" };
-                if (ml.Contains(cs.Modifier))
-                {
-                    cs.Command = cs.Modifier.Substring(0, 1);
-                }
+                return PostActionUpdate(gmr, p, cs.Message);
             }
+           
 
-            // shortcut for moves
-            if ((cs.Command.Length >= 1) & (cs.Command.Length <= 3))
-            {
-                // here we will process all moves 
-                cs = CheckForSingleWordMove(cs.Command);
 
-                if (cs.Valid == true)
-                {
-                    actionMessage = "move!!!";
-                    return PostActionUpdate(gmr, p, actionMessage);
-                }
-                else
-                {
-                    //adjust the result 
-                    return PostActionUpdate(gmr, p, cs.Message);
-                }
-            }
+            //var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+            //if (movecommands.Contains(cs.Command))
+            //{
+            //    var ml = new List<string>();
 
-            // Determine Move Type 
-            // Perform Move Action
+            //    if (cs.Command == "go")
+            //    {
+            //        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
+            //        if (ml.Contains(cs.Modifier))
+            //        {
+            //            cs.Valid = true;
+            //        }
+            //        else
+            //        {
+            //            cs.Valid = false;
+            //        }
+            //    }
+
+            //    // if the command is a short move convert to word
+            //    // shortcut for moves
+            //    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+            //    if (ml.Contains(cs.Command))
+            //    {
+            //        cs = ConvertShortMove(cs.Command);
+            //    }
+
+            //    if (cs.Valid == true)
+            //    {
+            //        (p, cs) = MovePlayer(p, cs);
+
+            //        actionMessage = cs.Message;
+
+            //        // update the gmr with the new room details
+
+            //        gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
+            //        gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
+            //        gmr.PlayerName = p.Player.Name;
+            //        gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
+
+            //        return PostActionUpdate(gmr, p, actionMessage);
+            //    }
+            //    else
+            //    {
+            //        actionMessage = "Wrong Way!";
+            //        return PostActionUpdate(gmr, p, actionMessage);
+            //    }
+                
+            //}
+
+            // Determine Action Type 
+            // Perform Activity
+
+
             // Return Move Result 
 
             return PostActionUpdate(gmr, p, actionMessage);
@@ -425,7 +457,10 @@ namespace AdventureServer
 
         private GameMoveResult PostActionUpdate(GameMoveResult gmr, PlayAdventure p, string actionMessage)
         {
+
+            // This provides the output to the user after we process the action and resulting activity
             var actiongmr = gmr;
+
             actiongmr.HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
 
             if (actiongmr.HealthReport == "Dead")
@@ -471,38 +506,84 @@ namespace AdventureServer
 
         #region Game Validation Methods
 
+        private Tuple<bool, GameMoveResult, PlayAdventure, CommandState> DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
+        {
+            
+            var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+            if (movecommands.Contains(cs.Command))
+            {
+                var ml = new List<string>();
 
+                if (cs.Command == "go")
+                {
+                    ml = new List<string> { "north", "south", "east", "west", "up", "down" };
+                    if (ml.Contains(cs.Modifier))
+                    {
+                        cs.Valid = true;
+                    }
+                    else
+                    {
+                        cs.Valid = false;
+                    }
+                }
 
+                // if the command is a short move convert to word
+                // shortcut for moves
+                ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                if (ml.Contains(cs.Command))
+                {
+                    cs = ConvertShortMove(cs.Command);
+                }
 
+                if (cs.Valid == true)
+                {
+                    (p, cs) = MovePlayer(p, cs);
+
+                    // update the gmr with the new room details
+
+                    gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
+                    gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
+                    gmr.PlayerName = p.Player.Name;
+                    gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
+
+                    return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(true, gmr, p, cs);
+                }
+                else if (cs.Valid == false)
+                {
+                    cs.Message = "Wrong Way!";
+                }
+
+            }
+                    cs.Message = "";
+                    return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
+            
+        }
 
         private Boolean DirectionOK(Room room, string direction)
         {
             switch (direction)
             {
-                case "North":
+                case "north":
                     if (room.N < 99) return true;
                     break;
-                case "South":
+                case "south":
                     if (room.S < 99) return true;
                     break;
-                case "East":
+                case "east":
                     if (room.E < 99) return true;
                     break;
-                case "West":
+                case "west":
                     if (room.W < 99) return true;
                     break;
-                case "Up":
+                case "up":
                     if (room.U < 99) return true;
                     break;
-                case "Down":
+                case "down":
                     if (room.D < 99) return true;
                     break;
             }
             return false;
         }
-
-
-
 
         #endregion Game Validation Methods
 
@@ -630,37 +711,34 @@ namespace AdventureServer
         private string GetWrongDirection(List<Message> messages, string dir)
         {
             string _message = "";
-            string _netural = "";
+     
+            if (dir == null) { dir = ""; }
 
             List<Message> _querymesssages;
 
             Random r = new Random();
 
-            List<string> card_directions = new List<string> { "n", "north", "s", "south", "e", "east", "w", "west" };
+            List<string> long_card_directions = new List<string> {  "north",  "south",  "east", "west" };
 
             if (dir.ToLower() == "up")
             {
-                _querymesssages = messages.FindAll(t => t.MessageTag == "Netural").ToList();
-                _netural = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-                _querymesssages.Clear();
                 _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Up").ToList();
-                _message = _netural + "\r\n" + _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                _message =  _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
             else if (dir.ToLower() == "down")
             {
-                _querymesssages = messages.FindAll(t => t.MessageTag == "Netural").ToList();
-                _netural = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-                _querymesssages.Clear();
                 _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _netural + "\r\n" + _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
-            else if (card_directions.Contains(dir.ToLower()))
+            else if (long_card_directions.Contains(dir.ToLower()))
             {
-                _querymesssages = messages.FindAll(t => t.MessageTag == "Netural").ToList();
-                _netural = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-                _querymesssages.Clear();
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Netural").ToList();
+                _message =  _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            else 
+            {
                 _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Any").ToList();
-                _message = _netural + "\r\n" + _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
 
             if (_message.Contains("@")) { return _message.Replace("@", dir).ToString(); }
@@ -673,6 +751,51 @@ namespace AdventureServer
         #endregion String Generation Mthods
 
         #region Game Actions to Activities
+
+        private Tuple<PlayAdventure, CommandState> MovePlayer(PlayAdventure p, CommandState cs)
+        {
+            // The command will have been parsed and we will expect the direction to be in command modifier
+            var room = GetRoom(p.Rooms, p.Player.Room);
+            var direction = cs.Modifier;
+
+            if (DirectionOK(room,direction))
+            {
+                // move player
+                switch (direction)
+                {
+                    case "north":
+                        p.Player.Room = room.N;
+                        break;
+                    case "south":
+                         p.Player.Room = room.S; 
+                        break;
+                    case "east":
+                        p.Player.Room = room.E; 
+                        break;
+                    case "west":
+                        p.Player.Room = room.W; 
+                        break;
+                    case "up":
+                         p.Player.Room = room.U; 
+                        break;
+                    case "down":
+                        p.Player.Room = room.D; 
+                        break;
+
+                } // end moving the player 
+
+
+            }
+            else
+            {
+                // set command state to no valid
+                cs.Valid = false;
+                // set message about the wrong direction
+                cs.Message = GetWrongDirection(p.Messages, cs.Modifier) + "\r\n";
+            }
+
+            return new Tuple<PlayAdventure, CommandState>(p, cs);
+        }
 
         #endregion Game Actions to Activities
 
