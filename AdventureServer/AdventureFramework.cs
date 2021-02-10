@@ -312,6 +312,12 @@ namespace AdventureServer
             }
 
             var cs = new CommandState();
+            { 
+                cs.Valid = true;
+                cs.Modifier = "";
+                cs.Message = "";
+            }
+
             if (cmds.Count() > 1)
             {
                 cs.RawCommand = gm.Move;
