@@ -129,18 +129,38 @@ namespace AdventureServer.AdventureData
             {
                 var _messsages = new List<Message>
             {
-                new Message {MessageTag ="Netural", Messsage="There is no way to go @ from here." },
-                new Message {MessageTag ="Netural", Messsage="You can't go @." },
-                new Message {MessageTag ="Netural", Messsage="There's nothing @ from here." },
+                new Message {MessageTag ="East", Messsage="There is no way to go @ from here." },
+                new Message {MessageTag ="East", Messsage="Going @ from here is not possible." },
+                new Message {MessageTag ="North", Messsage="You can't go @." },
+                new Message {MessageTag ="North", Messsage="There's nothing @ from here." },
                 new Message {MessageTag ="Up", Messsage="You can't go through the roof." },
                 new Message {MessageTag ="Up", Messsage="There's a roof in the way." },
                 new Message {MessageTag ="Up", Messsage="Ouch! You bump your head!"},
                 new Message {MessageTag ="Down", Messsage="You can't dig through the floor." },
                 new Message {MessageTag ="Down", Messsage="You sadly aren't a mole." },
                 new Message {MessageTag ="Down", Messsage="You begin to dig but stop out of frustration." },
-                new Message {MessageTag ="Any", Messsage="There's no way to go @." },
-                new Message {MessageTag ="Any", Messsage="There's no path leading @ from here." },
-                new Message {MessageTag ="Any", Messsage="It's a bad idea to go @. That leads to trouble."}
+                new Message {MessageTag ="South", Messsage="There's no way to go @." },
+                new Message {MessageTag ="South", Messsage="Going @ is not going to work." },
+                new Message {MessageTag ="West", Messsage="There's no path leading @ from here." },
+                new Message {MessageTag ="West", Messsage="It's a bad idea to go @. That leads to trouble."},
+                new Message {MessageTag ="Get", Messsage="The @ seems to be missing. Look again."},
+                new Message {MessageTag ="Get", Messsage="You reach for the @ through space and time but fail."},
+                new Message {MessageTag ="Eat", Messsage="You try to eat the @ and fail."},
+                new Message {MessageTag ="Eat", Messsage="Eating the @ won't work."},
+                new Message {MessageTag ="Eat", Messsage="The @ is not as good as it looks."},
+                new Message {MessageTag ="Throw", Messsage="Throwing the @ did nothing."},
+                new Message {MessageTag ="Throw", Messsage="No throwing @ here."},
+                new Message {MessageTag ="Look", Messsage="The @ looks the same as yesterday."},
+                new Message {MessageTag ="Look", Messsage="The @ looks shiny and new."},
+                new Message {MessageTag ="Wave", Messsage="Waving a @ seems silly."},
+                new Message {MessageTag ="Wave", Messsage="The @ attempts to wave back but fails."},
+                new Message {MessageTag ="Pet", Messsage="You can not pet the @. Try something softer."},
+                new Message {MessageTag ="Pet", Messsage="The @ fails to respond."},
+                new Message {MessageTag ="Any", Messsage="That seems like a bad idea. I can't let you do that" },
+                new Message {MessageTag ="Any", Messsage="That did not work as expected." },
+                new Message {MessageTag ="Any", Messsage="Nope." },
+                new Message {MessageTag ="Any", Messsage="Try Again! Just kidding. That likely won't work!" }
+
             };
 
                 return _messsages;

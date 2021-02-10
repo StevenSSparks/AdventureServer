@@ -393,6 +393,18 @@ namespace AdventureServer
             {
                 return PostActionUpdate(gmr, p, cs.Message);
             }
+            else
+            {
+                bool activity;
+                switch (cs.Command.ToLower())
+                {
+                    case "get": 
+                        
+                       (p, cs) = GetItem( p, cs);
+                        break;
+
+                }
+            }
            
 
 
@@ -708,11 +720,11 @@ namespace AdventureServer
             return _result;
         }
 
-        private string GetWrongDirection(List<Message> messages, string dir)
+        private string GetFunMessage(List<Message> messages, string action)
         {
             string _message = "";
      
-            if (dir == null) { dir = ""; }
+            if (action == null) { action = ""; }
 
             List<Message> _querymesssages;
 
@@ -720,20 +732,65 @@ namespace AdventureServer
 
             List<string> long_card_directions = new List<string> {  "north",  "south",  "east", "west" };
 
-            if (dir.ToLower() == "up")
+            if (action.ToLower() == "up")
             {
                 _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Up").ToList();
                 _message =  _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
-            else if (dir.ToLower() == "down")
+            else if (action.ToLower() == "down")
             {
                 _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
                 _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
-            else if (long_card_directions.Contains(dir.ToLower()))
+            else if (action.ToLower() == "north")
             {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Netural").ToList();
-                _message =  _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            else if (action.ToLower() == "south")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            else if (action.ToLower() == "east")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            else if (action.ToLower() == "west")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "get")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "eat")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "throw")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "look")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "wave")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+            }
+            if (action.ToLower() == "pet")
+            {
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
             else 
             {
@@ -741,12 +798,14 @@ namespace AdventureServer
                 _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
             }
 
-            if (_message.Contains("@")) { return _message.Replace("@", dir).ToString(); }
+            if (_message.Contains("@")) { return _message.Replace("@", action).ToString(); }
             else if (_message != "") { return _message; }
 
             return "You can't do that here.";
 
         }
+
+       
 
         #endregion String Generation Mthods
 
@@ -756,6 +815,7 @@ namespace AdventureServer
         {
             // The command will have been parsed and we will expect the direction to be in command modifier
             var room = GetRoom(p.Rooms, p.Player.Room);
+
             var direction = cs.Modifier;
 
             if (DirectionOK(room,direction))
@@ -791,8 +851,23 @@ namespace AdventureServer
                 // set command state to no valid
                 cs.Valid = false;
                 // set message about the wrong direction
-                cs.Message = GetWrongDirection(p.Messages, cs.Modifier) + "\r\n";
+                cs.Message = GetFunMessage(p.Messages, cs.Modifier) + "\r\n";
             }
+
+            return new Tuple<PlayAdventure, CommandState>(p, cs);
+        }
+
+        private Tuple<PlayAdventure, CommandState> GetItem(PlayAdventure p, CommandState cs)
+        {
+                // The command will have been parsed and we will expect the item to be in command modifier
+            var room = GetRoom(p.Rooms, p.Player.Room);
+            var item = cs.Modifier.ToLower();
+
+            // set command state to no valid
+            cs.Valid = false;
+            // set message about the wrong direction
+            cs.Message = GetFunMessage(p.Messages, cs.Command) + "\r\n";
+            
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
