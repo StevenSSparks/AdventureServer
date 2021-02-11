@@ -35,11 +35,26 @@ namespace AdventureServer_Test
         [Test]
         public void TestCreateNewGame()
         {
-            var adv = new PlayAdventure();
+           
             var getadv = _adventureFramework.NewGame(1);
             Assert.IsTrue(getadv.InstanceID.Length > 10);
 
         }
+
+        [Test]
+        public void TestItemMovemementAndCache()
+        {
+            var adv = new PlayAdventure();
+            var newadv = _adventureFramework.NewGame(1);
+            adv = _adventureFramework.GetInstanceObject(newadv.InstanceID);
+            adv.Items = _adventureFramework.MoveItem(adv.Items, "bugle", 9999);
+            _adventureFramework.UpdateInstance(adv);
+            adv = _adventureFramework.GetInstanceObject(adv.InstanceID);
+            var itemloc = adv.Items.Find(i => i.Name.ToLower() == "bugle").Location;
+            Assert.IsTrue(itemloc == 9999);
+ 
+        }
+
 
     }
 }

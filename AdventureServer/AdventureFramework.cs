@@ -490,8 +490,6 @@ namespace AdventureServer
             gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
             p.Player = SetPlayerPoints(false, gmr.RoomName, p);
 
-           
-
             // setup output message
             gmr.RoomMessage = actionMessage + "\r\n" + GetRoom(p.Rooms, p.Player.Room).Desc;
             gmr.RoomMessage += GetRoomPath(GetRoom(p.Rooms, p.Player.Room));
