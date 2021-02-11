@@ -247,6 +247,7 @@ namespace AdventureServer
             return new CommandState();
         }
 
+
         private CommandState ConvertShortMove(string direction)
         {
             var cmd = direction.Trim();
@@ -300,37 +301,80 @@ namespace AdventureServer
             // take into account messy typing with extra spaces front, back and between
             // use the firt two words   wave  wand  and wave wand should parse the same 
             var c = gm.Move.Trim().ToLower();
-            var cList = c.Split(" ").ToList<string>();
-            var cmds = new List<string>();
 
-            //take the first 2 that are not empty 
-            int cnt = 0;
-            foreach (string s in cList)
-            {
-                if (s.Trim() != "") { cmds.Add(s.ToLower()); cnt++; }
-                if (cnt == 2) { break; }
-            }
+            if (c == null) c = "";
 
             var cs = new CommandState();
-            { 
+            {
                 cs.Valid = true;
                 cs.Modifier = "";
                 cs.Message = "";
             }
 
-            if (cmds.Count() > 1)
+            if (c != "")
             {
-                cs.RawCommand = gm.Move;
-                cs.Command = cmds[0];
-                cs.Modifier = cmds[1];
+                var cList = c.Split(" ").ToList<string>();
+                var cmds = new List<string>();
+
+                //take the first 2 that are not empty 
+                int cnt = 0;
+                foreach (string s in cList)
+                {
+                    if (s.Trim() != "") { cmds.Add(s.ToLower()); cnt++; }
+                    if (cnt == 2) { break; }
+                }
+
+                if (cmds.Count() > 1)
+                {
+                    cs.RawCommand = gm.Move;
+                    cs.Command = cmds[0];
+                    cs.Modifier = cmds[1];
+                }
+                else
+                {
+                    cs.RawCommand = gm.Move;
+                    cs.Command = cmds[0];
+                }
             }
-            else
+            else 
             {
-                cs.RawCommand = gm.Move;
-                cs.Command = cmds[0];
+                cs.Valid = false;
+                cs.Modifier = "";
+                cs.Message = "";
+                cs.RawCommand = "";
+                cs.Command = "";
             }
 
             return cs;
+        }
+        
+        private string FindCommandSynonym(string cmd)
+        {
+            // TODO: sometime make this list driven
+
+            if (cmd == null) return "";
+            if (cmd == "") return cmd;
+
+            switch (cmd.Trim())
+            {
+                case "pick":
+                    return "get";
+                case "run":
+                    return "go";
+                case "put":
+                    return "drop";
+                case "bite":
+                case "taste":
+                    return "eat";
+                case "examine":
+                    return "look";
+                case "Inventory":
+                    return "inv";
+                case "restart":
+                    return "quit";
+                default:
+                    return cmd;
+            }
 
         }
 
@@ -342,12 +386,6 @@ namespace AdventureServer
         // actions have to match the permitted action assocated with an item
 
         // First we will check for Command [Actions]
-
-
-
-
-
-
 
         #endregion Game Command Parse
 
@@ -378,7 +416,7 @@ namespace AdventureServer
             var p = GetInstanceObject(move.InstanceID);
 
             //setup the intial response message and result
-            string actionMessage = "Please try that again.\r\n";
+            cs.Message = "";
 
             var gmr = new GameMoveResult
             {
@@ -387,12 +425,14 @@ namespace AdventureServer
                 RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc,
                 PlayerName = p.Player.Name,
                 ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true),
+                HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax)
             };
 
             //parse the command 
             cs = ParseCommand(move);
-            bool playermoved;
+            cs.Command = FindCommandSynonym(cs.Command);
 
+            bool playermoved;
             (playermoved, gmr, p, cs) = DidPlayerMove(p, gmr, cs);
 
             if (playermoved)
@@ -401,104 +441,69 @@ namespace AdventureServer
             }
             else
             {
-                // bool activity;
+
                 switch (cs.Command.ToLower())
                 {
                     case "get": 
                         
-                       (p, cs) = GetItemAction( p, cs);
+                       (p, cs) = ItemAction( p, cs);
+                        break;
+                    case "drop":
+
+                        (p, cs) = ItemAction(p, cs);
                         break;
 
                 }
             }
            
 
-
-            //var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-            //if (movecommands.Contains(cs.Command))
-            //{
-            //    var ml = new List<string>();
-
-            //    if (cs.Command == "go")
-            //    {
-            //        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
-            //        if (ml.Contains(cs.Modifier))
-            //        {
-            //            cs.Valid = true;
-            //        }
-            //        else
-            //        {
-            //            cs.Valid = false;
-            //        }
-            //    }
-
-            //    // if the command is a short move convert to word
-            //    // shortcut for moves
-            //    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-            //    if (ml.Contains(cs.Command))
-            //    {
-            //        cs = ConvertShortMove(cs.Command);
-            //    }
-
-            //    if (cs.Valid == true)
-            //    {
-            //        (p, cs) = MovePlayer(p, cs);
-
-            //        actionMessage = cs.Message;
-
-            //        // update the gmr with the new room details
-
-            //        gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
-            //        gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
-            //        gmr.PlayerName = p.Player.Name;
-            //        gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
-
-            //        return PostActionUpdate(gmr, p, actionMessage);
-            //    }
-            //    else
-            //    {
-            //        actionMessage = "Wrong Way!";
-            //        return PostActionUpdate(gmr, p, actionMessage);
-            //    }
-                
-            //}
-
-            // Determine Action Type 
-            // Perform Activity
-
-
-            // Return Move Result 
-
-            return PostActionUpdate(gmr, p, actionMessage);
+            return PostActionUpdate(gmr, p, cs.Message);
 
         }
 
         private GameMoveResult PostActionUpdate(GameMoveResult gmr, PlayAdventure p, string actionMessage)
         {
+            // Compute Player Health 
+            p.Player.HealthCurrent = SetPlayerNewHealth(p);
+            gmr.HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
+            
 
             // This provides the output to the user after we process the action and resulting activity
-            var actiongmr = gmr;
 
-            actiongmr.HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
+            string healthActionMessage = "";
 
-            if (actiongmr.HealthReport == "Dead")
+            if (gmr.HealthReport == "Dead")
             {
-                actiongmr.RoomMessage = "You Died. R.I.P.\r\n" + gmr.RoomMessage;
-                actiongmr.ItemsMessage = "You see a SIGN\r\n";
-                return actiongmr;
+                healthActionMessage = "You Died. R.I.P.\r\n";
+                p.Player.PlayerDead = true;
             }
 
-            if (actiongmr.HealthReport == "Bad!")
+            if (gmr.HealthReport == "Bad!")
             {
-                actiongmr.RoomMessage = "You are feeling hungry and ill. \r\n" + gmr.RoomMessage;
+                healthActionMessage = "You are feeling hungry and ill. \r\n";
             }
 
+            gmr.InstanceID = p.InstanceID;
+            gmr.PlayerName = p.Player.Name;
+
+            // set room name and add to points if not already added
+            gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
             p.Player = SetPlayerPoints(false, gmr.RoomName, p);
-            actiongmr.RoomMessage = actionMessage + "\r\n" + actiongmr.RoomMessage;
-            actiongmr.RoomMessage = actiongmr.RoomMessage + GetRoomPath(GetRoom(p.Rooms, p.Player.Room));
+
+           
+
+            // setup output message
+            gmr.RoomMessage = actionMessage + "\r\n" + GetRoom(p.Rooms, p.Player.Room).Desc;
+            gmr.RoomMessage += GetRoomPath(GetRoom(p.Rooms, p.Player.Room));
+            gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
+
+            if (healthActionMessage != "")
+            {
+                gmr.RoomMessage += "\r\n" + healthActionMessage + "\r\n";
+            }
 
             UpdateInstance(p);
-            return actiongmr;
+            return gmr;
         }
 
         private GameMoveResult QuitGame(GameMove gm)
@@ -526,54 +531,59 @@ namespace AdventureServer
 
         private Tuple<bool, GameMoveResult, PlayAdventure, CommandState> DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
         {
-            
-            var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-            if (movecommands.Contains(cs.Command))
+            cs.Message = "";
+            if (p.Player.PlayerDead == false)
             {
-                var ml = new List<string>();
-
-                if (cs.Command == "go")
+                var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                if (movecommands.Contains(cs.Command))
                 {
-                    ml = new List<string> { "north", "south", "east", "west", "up", "down" };
-                    if (ml.Contains(cs.Modifier))
+                    var ml = new List<string>();
+
+                    if (cs.Command == "go")
                     {
-                        cs.Valid = true;
+                        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
+                        if (ml.Contains(cs.Modifier))
+                        {
+                            cs.Valid = true;
+                        }
+                        else
+                        {
+                            cs.Valid = false;
+                        }
                     }
-                    else
+
+                    // if the command is a short move convert to word
+                    // shortcut for moves
+                    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                    if (ml.Contains(cs.Command))
                     {
-                        cs.Valid = false;
+                        cs = ConvertShortMove(cs.Command);
                     }
+
+                    if (cs.Valid == true)
+                    {
+                        (p, cs) = MovePlayerAction(p, cs);
+
+                        // update the gmr with the new room details
+
+                        gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
+                        gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
+                        gmr.PlayerName = p.Player.Name;
+                        gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
+
+                        return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(true, gmr, p, cs);
+                    }
+                    else if (cs.Valid == false)
+                    {
+                        cs.Message = "Wrong Way!";
+                    }
+
                 }
-
-                // if the command is a short move convert to word
-                // shortcut for moves
-                ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-                if (ml.Contains(cs.Command))
-                {
-                    cs = ConvertShortMove(cs.Command);
-                }
-
-                if (cs.Valid == true)
-                {
-                    (p, cs) = MovePlayerAction(p, cs);
-
-                    // update the gmr with the new room details
-
-                    gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
-                    gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
-                    gmr.PlayerName = p.Player.Name;
-                    gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
-
-                    return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(true, gmr, p, cs);
-                }
-                else if (cs.Valid == false)
-                {
-                    cs.Message = "Wrong Way!";
-                }
-
-            }
-                    cs.Message = "";
-                    return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
+                
+            }    
+            else { cs.Message = GetFunMessage(p.Messages,"DeadMove"); } 
+   
+            return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
             
         }
 
@@ -735,86 +745,28 @@ namespace AdventureServer
         private string GetFunMessage(List<Message> messages, string action)
         {
             string _message = "";
-     
-            if (action == null) { action = ""; }
+
+            if (action == null) { action = "any"; }  else { action = action.ToLower(); }
 
             List<Message> _querymesssages;
 
             Random r = new Random();
 
-            List<string> long_card_directions = new List<string> {  "north",  "south",  "east", "west" };
+            _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag.ToLower() == action.ToLower()).ToList();
 
-            if (action.ToLower() == "up")
+            if (_querymesssages.Count == 0)
             {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Up").ToList();
-                _message =  _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else if (action.ToLower() == "down")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else if (action.ToLower() == "north")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else if (action.ToLower() == "south")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else if (action.ToLower() == "east")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else if (action.ToLower() == "west")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "get")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "eat")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "throw")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "look")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "wave")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            if (action.ToLower() == "pet")
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Down").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-            }
-            else 
-            {
-                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag == "Any").ToList();
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag.ToLower() == "any").ToList();
             }
 
-            if (_message.Contains("@")) { return _message.Replace("@", action).ToString(); }
-            else if (_message != "") { return _message; }
+            if (_querymesssages.Count > 0)
+            {
+                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
+                if (_message.Contains("@")) { return _message.Replace("@", action); }
+                else if (_message != "") { return _message; }
+            }
 
             return "You can't do that here.";
-
         }
 
        
@@ -869,24 +821,61 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> GetItemAction(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> ItemAction(PlayAdventure p, CommandState cs)
         {
-                // The command will have been parsed and we will expect the item to be in command modifier
-            var room = GetRoom(p.Rooms, p.Player.Room);
-            var requesteditem = cs.Modifier.ToLower();
-            var item = GetItemDetails(requesteditem, p.Items);
+            // The command will have been parsed and we will expect the item to be in command modifier
 
-            if (item is not null)
+            if (cs.Command == "get")
             {
-                cs.Valid = true;
+                var room = GetRoom(p.Rooms, p.Player.Room);
+                var requesteditem = cs.Modifier.ToLower();
+                var item = GetItemDetails(requesteditem, p.Items);
 
+                if (item is not null)
+                {
+                    if (item.Location == p.Player.Room)
+                    {
+                        p.Items = MoveItem(p.Items, requesteditem, 9999); // 9999 is players inventory
+                        cs.Message = GetFunMessage(p.Messages, "getsuccess");
+                    }
+
+
+                }
+                else cs.Valid = false;
+
+                if (cs.Valid == false)
+                {
+                    cs.Valid = false;
+                    // set message about the wrong direction
+                    cs.Message = GetFunMessage(p.Messages, "getfailed") + "\r\n";
+                }
             }
-            else
+
+            if (cs.Command == "drop")
             {
-                cs.Valid = false;
-                // set message about the wrong direction
-                cs.Message = GetFunMessage(p.Messages, cs.Command) + "\r\n";
+                var room = GetRoom(p.Rooms, p.Player.Room);
+                var requesteditem = cs.Modifier.ToLower();
+                var item = GetItemDetails(requesteditem, p.Items);
+
+                if (item is not null)
+                {
+                    if (item.Location == 9999)
+                    {
+                        p.Items = MoveItem(p.Items, requesteditem, room.Number); 
+                        cs.Message = GetFunMessage(p.Messages, "dropsuccess") + "\r\n";
+                    }
+
+                }
+                else cs.Valid = false;
+
+                if (cs.Valid == false)
+                {
+                    cs.Valid = false;
+                    // set message about the wrong direction
+                    cs.Message = GetFunMessage(p.Messages, "dropfailed") + "\r\n";
+                }
             }
+
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
