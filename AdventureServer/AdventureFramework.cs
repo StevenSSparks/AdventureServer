@@ -378,7 +378,7 @@ namespace AdventureServer
             var p = GetInstanceObject(move.InstanceID);
 
             //setup the intial response message and result
-            string actionMessage = "Please try that again. ";
+            string actionMessage = "Please try that again.\r\n";
 
             var gmr = new GameMoveResult
             {
@@ -401,12 +401,12 @@ namespace AdventureServer
             }
             else
             {
-                bool activity;
+                // bool activity;
                 switch (cs.Command.ToLower())
                 {
                     case "get": 
                         
-                       (p, cs) = GetItem( p, cs);
+                       (p, cs) = GetItemAction( p, cs);
                         break;
 
                 }
@@ -555,7 +555,7 @@ namespace AdventureServer
 
                 if (cs.Valid == true)
                 {
-                    (p, cs) = MovePlayer(p, cs);
+                    (p, cs) = MovePlayerAction(p, cs);
 
                     // update the gmr with the new room details
 
@@ -705,6 +705,12 @@ namespace AdventureServer
             else return "Dead";
         }
 
+        private Item GetItemDetails(string name, List<Item> Items)
+        {
+            var _result = Items.First(t => t.Name.ToLower().Equals(name.ToLower()));
+            return _result;
+        }
+        
         private string GetItemDesc(string name, List<Item> Items)
         {
             var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower())).Description.ToString();
@@ -712,7 +718,7 @@ namespace AdventureServer
             return _result;
         }
 
-        private string GetItemAction(string name, List<Item> Items)
+        private string GetItemActoionResult(string name, List<Item> Items)
         {
             var _result =Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower())).Action.ToString();
             if (_result == null) { _result = ""; }
@@ -817,7 +823,7 @@ namespace AdventureServer
 
         #region Game Actions to Activities
 
-        private Tuple<PlayAdventure, CommandState> MovePlayer(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> MovePlayerAction(PlayAdventure p, CommandState cs)
         {
             // The command will have been parsed and we will expect the direction to be in command modifier
             var room = GetRoom(p.Rooms, p.Player.Room);
@@ -863,17 +869,24 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> GetItem(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> GetItemAction(PlayAdventure p, CommandState cs)
         {
                 // The command will have been parsed and we will expect the item to be in command modifier
             var room = GetRoom(p.Rooms, p.Player.Room);
-            var item = cs.Modifier.ToLower();
+            var requesteditem = cs.Modifier.ToLower();
+            var item = GetItemDetails(requesteditem, p.Items);
 
-            // set command state to no valid
-            cs.Valid = false;
-            // set message about the wrong direction
-            cs.Message = GetFunMessage(p.Messages, cs.Command) + "\r\n";
-            
+            if (item is not null)
+            {
+                cs.Valid = true;
+
+            }
+            else
+            {
+                cs.Valid = false;
+                // set message about the wrong direction
+                cs.Message = GetFunMessage(p.Messages, cs.Command) + "\r\n";
+            }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }

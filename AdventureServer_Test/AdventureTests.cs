@@ -25,14 +25,11 @@ namespace AdventureServer_Test
 
         }
 
-
         [Test]
         public void SmokeTest()
         {
-
             var OkResult = _welcomeSontroller.Index();
             Assert.IsNotNull(OkResult);
-
         }
 
         [Test]
@@ -44,14 +41,5 @@ namespace AdventureServer_Test
 
         }
 
-
-
-
-
-        [Test]
-        public void Test1()
-        {
-            Assert.Pass();
-        }
     }
 }
