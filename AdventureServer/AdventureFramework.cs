@@ -14,7 +14,7 @@ namespace AdventureServer
         private readonly AdventureData.AdventureHouse adventureHouse = new AdventureData.AdventureHouse();
 
         // storage for the adventures
-        private IMemoryCache _gameCache;
+        private readonly IMemoryCache _gameCache;
 
         public AdventureFramework(IMemoryCache GameCache)
         {
@@ -207,12 +207,12 @@ namespace AdventureServer
 
         }
 
-        private bool PlayerDead(PlayAdventure p)
+        private static bool PlayerDead(PlayAdventure p)
         {
             if (p.Player.HealthCurrent < 1) return true;
             return false;
         }
-        private int SetPlayerNewHealth(PlayAdventure p)
+        private static int SetPlayerNewHealth(PlayAdventure p)
         {
             return p.Player.HealthCurrent - p.HealthStep;
         }
@@ -241,16 +241,8 @@ namespace AdventureServer
 
         #region Game Command Parse
 
-        CommandState GetCommandState(GameMove gm)
+        private static CommandState ConvertShortMove(string direction)
         {
-
-            return new CommandState();
-        }
-
-
-        private CommandState ConvertShortMove(string direction)
-        {
-            var cmd = direction.Trim();
             var cs = new CommandState // setup with assumed move details
             {
                 Valid = true,
@@ -324,7 +316,7 @@ namespace AdventureServer
                     if (cnt == 2) { break; }
                 }
 
-                if (cmds.Count() > 1)
+                if (cmds.Count > 1)
                 {
                     cs.RawCommand = gm.Move;
                     cs.Command = cmds[0];
@@ -355,26 +347,18 @@ namespace AdventureServer
             if (cmd == null) return "";
             if (cmd == "") return cmd;
 
-            switch (cmd.Trim())
+            return (cmd.Trim()) switch
             {
-                case "pick":
-                    return "get";
-                case "run":
-                    return "go";
-                case "put":
-                    return "drop";
-                case "bite":
-                case "taste":
-                    return "eat";
-                case "examine":
-                    return "look";
-                case "Inventory":
-                    return "inv";
-                case "restart":
-                    return "quit";
-                default:
-                    return cmd;
-            }
+                "pick" => "get",
+                "run" => "go",
+                "put" => "drop",
+                "bite" => "eat",
+                "taste" => "eat",
+                "examine" => "look",
+                "Inventory" => "inv",
+                "restart" => "quit",
+                _ => cmd,
+            };
 
         }
 
@@ -535,11 +519,12 @@ namespace AdventureServer
                 var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
                 if (movecommands.Contains(cs.Command))
                 {
-                    var ml = new List<string>();
+
+                    List<string> ml;
 
                     if (cs.Command == "go")
                     {
-                        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
+                         ml = new List<string> { "north", "south", "east", "west", "up", "down" };
                         if (ml.Contains(cs.Modifier))
                         {
                             cs.Valid = true;
@@ -552,7 +537,7 @@ namespace AdventureServer
 
                     // if the command is a short move convert to word
                     // shortcut for moves
-                    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                     ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
                     if (ml.Contains(cs.Command))
                     {
                         cs = ConvertShortMove(cs.Command);
@@ -579,13 +564,13 @@ namespace AdventureServer
                 }
                 
             }    
-            else { cs.Message = GetFunMessage(p.Messages,"DeadMove"); } 
+            else { cs.Message = GetFunMessage(p.Messages,"DeadMove".Trim(), cs.Modifier); } 
    
             return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
             
         }
 
-        private Boolean DirectionOK(Room room, string direction)
+        private static Boolean DirectionOK(Room room, string direction)
         {
             switch (direction)
             {
@@ -715,7 +700,7 @@ namespace AdventureServer
 
         private Item GetItemDetails(string name, List<Item> Items)
         {
-            var _result = Items.First(t => t.Name.ToLower().Equals(name.ToLower()));
+            var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower()));
             return _result;
         }
         
@@ -740,7 +725,7 @@ namespace AdventureServer
             return _result;
         }
 
-        private string GetFunMessage(List<Message> messages, string action)
+        private string GetFunMessage(List<Message> messages, string action, string commandorobject)
         {
             string _message = "";
 
@@ -748,7 +733,7 @@ namespace AdventureServer
 
             List<Message> _querymesssages;
 
-            Random r = new Random();
+            Random r = new Random(); // picks a random integer between the lower bound(inclusive) and the upper bound(exclusive).
 
             _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag.ToLower() == action.ToLower()).ToList();
 
@@ -759,8 +744,9 @@ namespace AdventureServer
 
             if (_querymesssages.Count > 0)
             {
-                _message = _querymesssages[r.Next(0, _querymesssages.Count - 1)].Messsage;
-                if (_message.Contains("@")) { return _message.Replace("@", action); }
+                var msgid = r.Next(0, _querymesssages.Count);
+                _message = _querymesssages[msgid].Messsage;
+                if (_message.Contains("@")) { return _message.Replace("@", commandorobject); }
                 else if (_message != "") { return _message; }
             }
 
@@ -813,7 +799,7 @@ namespace AdventureServer
                 // set command state to no valid
                 cs.Valid = false;
                 // set message about the wrong direction
-                cs.Message = GetFunMessage(p.Messages, cs.Modifier) + "\r\n";
+                cs.Message = GetFunMessage(p.Messages, cs.Modifier, cs.Modifier) + "\r\n";
             }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
@@ -825,7 +811,7 @@ namespace AdventureServer
 
             if (cs.Command == "get")
             {
-                var room = GetRoom(p.Rooms, p.Player.Room);
+                // var room = GetRoom(p.Rooms, p.Player.Room);
                 var requesteditem = cs.Modifier.ToLower();
                 var item = GetItemDetails(requesteditem, p.Items);
 
@@ -833,19 +819,24 @@ namespace AdventureServer
                 {
                     if (item.Location == p.Player.Room)
                     {
-                        p.Items = MoveItem(p.Items, requesteditem, 9999); // 9999 is players inventory
-                        cs.Message = GetFunMessage(p.Messages, "getsuccess");
+                        if (item.ActionVerb.ToLower() == "pet")
+                        {
+                            cs.Valid = false;
+                            cs.Message = GetFunMessage(p.Messages, "getpetfailed", cs.Modifier) + "\r\n";
+                        }
+                        else
+                        {
+                            p.Items = MoveItem(p.Items, requesteditem, 9999); // 9999 is players inventory
+                            cs.Message = GetFunMessage(p.Messages, "getsuccess", cs.Modifier);
+                        }
+
                     }
 
-
                 }
-                else cs.Valid = false;
-
-                if (cs.Valid == false)
+                else 
                 {
                     cs.Valid = false;
-                    // set message about the wrong direction
-                    cs.Message = GetFunMessage(p.Messages, "getfailed") + "\r\n";
+                    cs.Message = GetFunMessage(p.Messages, "getfailed", cs.Modifier) + "\r\n";
                 }
             }
 
@@ -860,7 +851,7 @@ namespace AdventureServer
                     if (item.Location == 9999)
                     {
                         p.Items = MoveItem(p.Items, requesteditem, room.Number); 
-                        cs.Message = GetFunMessage(p.Messages, "dropsuccess") + "\r\n";
+                        cs.Message = GetFunMessage(p.Messages, "dropsuccess", cs.Modifier) + "\r\n";
                     }
 
                 }
@@ -870,7 +861,7 @@ namespace AdventureServer
                 {
                     cs.Valid = false;
                     // set message about the wrong direction
-                    cs.Message = GetFunMessage(p.Messages, "dropfailed") + "\r\n";
+                    cs.Message = GetFunMessage(p.Messages, "dropfailed", cs.Modifier) + "\r\n";
                 }
             }
 

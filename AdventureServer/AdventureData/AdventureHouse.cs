@@ -87,7 +87,7 @@ namespace AdventureServer.AdventureData
                 return _items;
             }
 
-            private List<Room> Rooms()
+            private static List<Room> Rooms()
             {
                 var _rooms = new List<Room>
             {
@@ -125,7 +125,7 @@ namespace AdventureServer.AdventureData
                 return _rooms;
             }
 
-            private List<Message> Messages()
+            private static List<Message> Messages()
             {
                 var _messsages = new List<Message>
             {
@@ -145,6 +145,8 @@ namespace AdventureServer.AdventureData
                 new Message {MessageTag ="West", Messsage="It's a bad idea to go @. That leads to trouble."},
                 new Message {MessageTag ="GetFailed", Messsage="The @ seems to be missing. Look again."},
                 new Message {MessageTag ="GetFailed", Messsage="You reach for the @ through space and time but fail."},
+                new Message {MessageTag ="GetPetFailed", Messsage="You reach for the @ but it jumps out of your hands."},
+                new Message {MessageTag ="GetPetFailed", Messsage="The @ does not want to be picked up and put in your backpack."},
                 new Message {MessageTag ="GetSuccess", Messsage="The @ seems fit snugly in your pack."},
                 new Message {MessageTag ="GetSuccess", Messsage="You store the @ in your inventory."},
                 new Message {MessageTag ="DropFailed", Messsage="The @ is not in your inventory."},
