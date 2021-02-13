@@ -61,7 +61,6 @@ namespace AdventureServer.AdventureData
                 return _play;
             }
 
-
             private List<Item> Items()
             {
 
@@ -70,18 +69,18 @@ namespace AdventureServer.AdventureData
                 new Item { Name="BREAD",  Description="A small loaf of bread. Not quite a lunch, too big for a snack.",Location=06, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
                 new Item { Name="BUGLE", Description="You were never very good with instruments.",Location= 20, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1" , ActionPoints=1 },
                 new Item { Name="APPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 07, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints = 10 },
-                new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 24, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|Door is now unlocked", ActionPoints=100},
+                new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 24, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked", ActionPoints=100},
                 new Item { Name="WAND", Description= "A small wooden wand.",Location = 17, Action="You wave the wand and the room fades for a second.", ActionVerb="WAVE", ActionResult = "TELEPORT", ActionValue = "1", ActionPoints=10 },
                 new Item { Name="PIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 10, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints = 10 },
                 new Item { Name="BREAD",  Description="A small loaf of bread. Not quite a lunch, too big for a snack.",Location=99, Action="It's too big for a snack. Maybe later, for lunch.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints= 10 },
                 new Item { Name="BUGLE", Description="You were never very good with instruments.",Location= 99, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1", ActionPoints =1 },
                 new Item { Name="APPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 99, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints=25 },
-                new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 99, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|Door is now unlocked" },
+                new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 99, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked" },
                 new Item { Name="WAND", Description= "A small wooden wand.",Location = 99, Action="You wave the wand and the room fades for a second.", ActionVerb="WAVE", ActionResult = "TELEPORT", ActionValue = "1", ActionPoints=1},
                 new Item { Name="PIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 99, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints=10},
                 new Item { Name="STICK", Description= "This is the developers helpful and magic stick.",Location = 00, Action= "This looks a lot a debugging tool that a developer would create to make his life easy.", ActionVerb="WAVE", ActionResult="TELEPORT", ActionValue ="99", ActionPoints=0},
                 new Item { Name="KITTEN", Description= "A delightful kitten",Location = 20, Action= "The little fuzzball of a black and white kitten just looks so adorable!", ActionVerb="PET", ActionResult="FOLLOW", ActionValue ="20", ActionPoints=50 },
-                new Item { Name="ROCK", Description= "A magic rock",Location = 19, Action= "This looks more like poop than a rock. Might want to get rid of this thing soon.", ActionVerb="THROW", ActionResult="TELEPORT", ActionValue ="20", ActionPoints=10 }
+                new Item { Name="ROCK", Description= "A magic rock",Location = 19, Action= "This looks more like poop than a rock. Might want to get rid of this thing soon.", ActionVerb="THROW", ActionResult="TELEPORT", ActionValue ="95", ActionPoints=10 }
            };
 
                 return _items;
@@ -106,7 +105,7 @@ namespace AdventureServer.AdventureData
                 new Room { Number = 12, RoomPoints=5 ,Name = "Upper East Hall", Desc = "Hall with two tables and computers. The computers are broken.", N = 11, S = 15, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 13, RoomPoints=5 ,Name = "Upper North Hall", Desc = "The hall has a large closet. ", N = 18, S = 14, E = 11, W = 17, U = 99, D = 99 },
                 new Room { Number = 14, RoomPoints=5 ,Name = "Upper West Hall", Desc = "The hall with a small closet. That is nailed shut with an out of order sign on the door. ", N = 13, S = 23, E = 99, W = 22, U = 99, D = 99 },
-                new Room { Number = 15, RoomPoints=5 ,Name = "Guest Room", Desc = "The bedroom has a queen size bed. The bed is covered in roses that look a bit old. The petels like they were place there months ago.", N = 12, S = 99, E = 99, W = 99, U = 99, D = 99 },
+                new Room { Number = 15, RoomPoints=5 ,Name = "Guest Room", Desc = "The bedroom has a queen size bed. The bed is covered in roses that look a bit old. The pedals like they were place there months ago.", N = 12, S = 99, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 16, RoomPoints=5 ,Name = "Laundry", Desc = "This is a laundry room with a washer and dryer. The dryer looks fine but the washer looks rusty and old.", N = 99, S = 99, E = 99, W = 11, U = 99, D = 99 },
                 new Room { Number = 17, RoomPoints=5 ,Name = "Main Bathroom", Desc = "The main bathroom with a large bathtub that is full of bubble bath. The water looks dirty.", N = 99, S = 99, E = 13, W = 99, U = 99, D = 99 },
                 new Room { Number = 18, RoomPoints=5 ,Name = "Master Bedroom", Desc = "The master bedroom with an inviting king size bed. The room is messy and it seems like they had a party here.", N = 21, S = 13, E = 19, W = 99, U = 99, D = 99 },
@@ -115,7 +114,7 @@ namespace AdventureServer.AdventureData
                 new Room { Number = 21, RoomPoints=5 ,Name = "Master BathRoom", Desc = "Warm master bedroom with a shower and tub.", N = 99, S = 18, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 22, RoomPoints=5 ,Name = "Children's Room", Desc = "Clean children's room with twin beds.", N = 99, S = 99, E = 14, W = 99, U = 99, D = 99 },
                 new Room { Number = 23, RoomPoints=5 ,Name = "Entertainment Room", Desc = "This is a very inviting play room with games and toys.", N = 14, S = 99, E = 99, W = 99, U = 99, D = 99 },
-                new Room { Number = 24, RoomPoints=50 ,Name = "Patio", Desc = "You are standing on a finely crafted wooden patio. A key on the floor.", N = 99, S = 99, E = 06, W = 99, U = 99, D = 99 },
+                new Room { Number = 24, RoomPoints=50 ,Name = "Patio", Desc = "You are standing on a finely crafted wooden patio.", N = 99, S = 99, E = 06, W = 99, U = 99, D = 99 },
                 new Room { Number = 93, RoomPoints=50 ,Name = "Glowing Ladder", Desc = "You are on a what seems like and endless glowing ladder. You see magic spiraling vortex. ", N = 99, S = 99, E = 19, W = 99, U = 95, D = 94 },
                 new Room { Number = 94, RoomPoints=50 ,Name = "Mystery Ladder", Desc = "You climbed on to the ladder and your memory of how to get back fades. You are on a what seems like and endless magic ladder.", N = 99, S = 99, E = 99, W = 99, U = 93, D = 95 },
                 new Room { Number = 95, RoomPoints=50 ,Name = "Magic Room", Desc = "A magic room. The walls sparkle and shine. This room seems like a very happy place. You see 4 doors and ladders leading up and down", N = 20, S = 20, E = 20, W = 20, U = 94, D = 93 }
@@ -145,31 +144,58 @@ namespace AdventureServer.AdventureData
                 new Message {MessageTag ="West", Messsage="It's a bad idea to go @. That leads to trouble."},
                 new Message {MessageTag ="GetFailed", Messsage="The @ seems to be missing. Look again."},
                 new Message {MessageTag ="GetFailed", Messsage="You reach for the @ through space and time but fail."},
-                new Message {MessageTag ="GetPetFailed", Messsage="You reach for the @ but it jumps out of your hands."},
-                new Message {MessageTag ="GetPetFailed", Messsage="The @ does not want to be picked up and put in your backpack."},
+                new Message {MessageTag ="PetFailed", Messsage="You reach for the @ but it jumps out of your hands."},
+                new Message {MessageTag ="PetFailed", Messsage="The @ does not want to be picked up and put in your backpack."},
+                new Message {MessageTag ="PetFailed", Messsage="The @ fails to respond at your harsh treatment."},
+                new Message {MessageTag ="PetSuccess", Messsage="The cute @ begins to follow you."},
+                new Message {MessageTag ="PetSuccess", Messsage="The little @ seems to like you and had become your friend."},
+                new Message {MessageTag ="ShooSuccess", Messsage="The cute @ looks disappointed and sits then runs away."},
+                new Message {MessageTag ="ShooSuccess", Messsage="The little @ is looks sad and goes to back to its safe plce."},
                 new Message {MessageTag ="GetSuccess", Messsage="The @ seems fit snugly in your pack."},
                 new Message {MessageTag ="GetSuccess", Messsage="You store the @ in your inventory."},
                 new Message {MessageTag ="DropFailed", Messsage="The @ is not in your inventory."},
                 new Message {MessageTag ="DropSuccess", Messsage="You place the @ on the floor."},
-                new Message {MessageTag ="Eat", Messsage="You try to eat the @ and fail."},
-                new Message {MessageTag ="Eat", Messsage="Eating the @ won't work."},
-                new Message {MessageTag ="Eat", Messsage="The @ is not as good as it looks."},
-                new Message {MessageTag ="Throw", Messsage="Throwing the @ did nothing."},
-                new Message {MessageTag ="Throw", Messsage="No throwing @ here."},
-                new Message {MessageTag ="Look", Messsage="The @ looks the same as yesterday."},
-                new Message {MessageTag ="Look", Messsage="The @ looks shiny and new."},
-                new Message {MessageTag ="Wave", Messsage="Waving a @ seems silly."},
-                new Message {MessageTag ="Wave", Messsage="The @ attempts to wave back but fails."},
-                new Message {MessageTag ="Pet", Messsage="You can not pet the @. Try something softer."},
-                new Message {MessageTag ="Pet", Messsage="The @ fails to respond."},
+                new Message {MessageTag ="UseFailed", Messsage="You try to use the @ and fail."},
+                new Message {MessageTag ="UseFailed", Messsage="You can seem to figure out the @."},
+                new Message {MessageTag ="UseFailed", Messsage="The @ is not ment to be used this way."},
+                new Message {MessageTag ="EatFailed", Messsage="You try to eat the @ and your mouth refuses to chew."},
+                new Message {MessageTag ="EatFailed", Messsage="Eating the @ won't work."},
+                new Message {MessageTag ="EatFailed", Messsage="The @ is not as good as it looks."},
+                new Message {MessageTag ="EatSuccessBig", Messsage="You try to eat the @ and it is very refreshing."},
+                new Message {MessageTag ="EatSuccessMedium", Messsage="Eating the @ made you feel better."},
+                new Message {MessageTag ="EatSuccessSmall", Messsage="The @ was good but not as filling as expected."},
+                new Message {MessageTag ="ThrowFailed", Messsage="Throwing the @ did nothing."},
+                new Message {MessageTag ="ThrowFailed", Messsage="No throwing @ here." },
+                new Message {MessageTag ="ThrowFailed", Messsage="Throwing a @ seems silly."},
+                new Message {MessageTag ="ThrowFailed", Messsage="You can't seem to throw the @"},
+                new Message {MessageTag ="LookEmpty", Messsage="You look around and don't see anything special."},
+                new Message {MessageTag ="LookFailed", Messsage="You don't see a @ here."},
+                new Message {MessageTag ="WaveFailed", Messsage="Waving a @ seems silly."},
+                new Message {MessageTag ="WaveFailed", Messsage="The @ attempts to wave back but fails."},
+                new Message {MessageTag ="WaveSuccess", Messsage="Waving a @ worked! Poof!"},
+                new Message {MessageTag ="WaveSuccess", Messsage="Waving the @ was a perfect idea! Zaaaap!"},
                 new Message {MessageTag ="DeadMove", Messsage="You are dead. Don't do that!"},
-                new Message {MessageTag ="DeavMove", Messsage="Only Zombies are allowed walk while dead."},
+                new Message {MessageTag ="DeadMove", Messsage="Only Zombies are allowed walk while dead."},
                 new Message {MessageTag ="Any", Messsage="That seems like a bad idea. I can't let you do that" },
                 new Message {MessageTag ="Any", Messsage="That did not work as expected." },
                 new Message {MessageTag ="Any", Messsage="Nope." },
-                new Message {MessageTag ="Any", Messsage="Try Again! Just kidding. That likely won't work!" }
-
-            };
+                new Message {MessageTag ="Any", Messsage="Try Again! Just kidding. That likely won't work!" },
+                new Message {MessageTag ="Dead", Messsage = "You Died. I'd play Taps but the bugle makes me feel sick R.I.P." },
+                new Message {MessageTag ="Dead", Messsage = "You Died. Did that hurt? R.I.P." },
+                new Message {MessageTag ="Bad", Messsage = "You will die soon unless you eat something." },
+                new Message {MessageTag ="Bad", Messsage = "You feel hungry, tired and sick" },
+                new Message {MessageTag ="Bad", Messsage = "You are Hangry!!" },
+                new Message {MessageTag ="PetFollow", Messsage="The @ sits grining and staring at you."},
+                new Message {MessageTag ="PetFollow", Messsage="The @ races between your legs." },
+                new Message {MessageTag ="PetFollow", Messsage="The @ stares silently." },
+                new Message {MessageTag ="PetFollow", Messsage="The @ rolls over and begs for a belly rub." },
+                new Message {MessageTag ="PetFollow", Messsage="The @ begins to sleep" },
+                new Message {MessageTag ="PetFollow", Messsage = "The @ chases its tail." },
+                new Message {MessageTag ="PetFollow", Messsage = "The @ sits and stars at its shadow." },
+                new Message {MessageTag ="PetFollow", Messsage = "The @ chases a bug into a small hole." },
+                new Message {MessageTag ="PetFollow", Messsage = "The @ sleeps quietly." },
+                new Message {MessageTag ="PetFollow", Messsage = "The @ runs across the room and then returns to your feet." }
+                };
 
                 return _messsages;
             }
