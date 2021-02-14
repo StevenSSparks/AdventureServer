@@ -12,6 +12,8 @@ namespace AdventureServer_Test
 
         private WelcomeController _welcomeSontroller;
         private AdventureFramework _adventureFramework;
+        private AdventureController _adventureController;
+        private PlayAdventureController _playAdventureController;
         private MemoryCacheOptions mco = new MemoryCacheOptions();
         private IMemoryCache _gameCache;
 
@@ -22,6 +24,8 @@ namespace AdventureServer_Test
             _gameCache = new MemoryCache(mco);
             _welcomeSontroller = new WelcomeController();
             _adventureFramework = new AdventureFramework(_gameCache);
+            _adventureController = new AdventureController(_adventureFramework);
+            _playAdventureController = new PlayAdventureController(_adventureController);
 
         }
 
@@ -52,8 +56,22 @@ namespace AdventureServer_Test
             adv = _adventureFramework.GameInstance_GetObject(adv.InstanceID);
             var itemloc = adv.Items.Find(i => i.Name.ToLower() == "bugle").Location;
             Assert.IsTrue(itemloc == 9999);
- 
+
+
         }
+
+        [Test]
+        public void PlayAdventureTest()
+        {
+
+            var adv = new PlayAdventure();
+            var newadv = _adventureFramework.ControllerEntry_NewGame(1);
+            adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            var test = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "get bugle" });
+            Assert.IsTrue(true);
+
+        }
+
 
 
     }
