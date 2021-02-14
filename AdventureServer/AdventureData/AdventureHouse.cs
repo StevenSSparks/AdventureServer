@@ -81,6 +81,7 @@ namespace AdventureServer.AdventureData
                 new Item { Name="PIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 99, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints=10},
                 new Item { Name="STICK", Description= "This is the developers helpful and magic stick.",Location = 00, Action= "This looks a lot a debugging tool that a developer would create to make his life easy.", ActionVerb="WAVE", ActionResult="TELEPORT", ActionValue ="99", ActionPoints=0},
                 new Item { Name="KITTEN", Description= "A delightful kitten",Location = 20, Action= "The little fuzzball of a black and white kitten just looks so adorable!", ActionVerb="PET", ActionResult="FOLLOW", ActionValue ="20", ActionPoints=50 },
+                new Item { Name="SECONDKEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 20, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked", ActionPoints=100},
                 new Item { Name="ROCK", Description= "A magic rock",Location = 19, Action= "This looks more like poop than a rock. Might want to get rid of this thing soon.", ActionVerb="THROW", ActionResult="TELEPORT", ActionValue ="95", ActionPoints=10 }
            };
 

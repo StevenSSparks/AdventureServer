@@ -1014,11 +1014,11 @@ namespace AdventureServer
                     {
                         List<string> unlockDetails = item.ActionValue.Split("|").ToList<string>();
 
-                        var unlockfromroom = Convert.ToInt32(unlockDetails[1]); // Room # that this item works
-                        var unlockdirection = unlockDetails[2]; // Direction we are unlocking 
-                        var unlocktoroom = Convert.ToInt32(unlockDetails[3]);  // Room Destination after the unlock
-                        var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
-                        var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
+                        var unlockfromroom = Convert.ToInt32(unlockDetails[0].ToString()); // Room # that this item works
+                        var unlockdirection = unlockDetails[1].ToString(); // Direction we are unlocking 
+                        var unlocktoroom = Convert.ToInt32(unlockDetails[2].ToString());  // Room Destination after the unlock
+                        var unlockedroomdesc = unlockDetails[3].ToString(); // Room Desc after an unlock
+                        var lockedroomdesc = unlockDetails[4].ToString(); // room Desc after a lock
 
 
                         if (Convert.ToInt32(unlockfromroom) == p.Player.Room)

@@ -18,19 +18,19 @@ namespace AdventureServer.Controllers
 
         // List of Games in the Game Data Store
         [HttpGet("/api/Adventure/list")]
-        public List<Game> GameList() => _playAdventure.GetGames();
+        public List<Game> GameList() => _playAdventure.ControllerEntry_GetGames();
 
         // Play First Game 
         [HttpGet("/api/Adventure/list")] 
-        public GameMoveResult NewGame() => _playAdventure.NewGame(1);
+        public GameMoveResult NewGame() => _playAdventure.ControllerEntry_NewGame(1);
 
         // Play Game based on the list of games 
         [HttpGet("/api/Adventure/{id}")] // returns the game requested
-        public GameMoveResult NewGameByID([FromRoute] int id) => _playAdventure.NewGame(id);
+        public GameMoveResult NewGameByID([FromRoute] int id) => _playAdventure.ControllerEntry_NewGame(id);
 
         // Make a Game Move 
         [HttpPost("/api/Adventure")]
-        public GameMoveResult GameMove(GameMove gm) => _playAdventure.GameMove(gm);
+        public GameMoveResult GameMove(GameMove gm) => _playAdventure.ControllerEntry_GameMove(gm);
    
     }
 }
