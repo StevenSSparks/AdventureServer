@@ -5,12 +5,18 @@ WORKDIR /app
 COPY *.sln ./
 COPY ./AdventureServer/*.csproj ./AdventureServer
 COPY ./AdventureServer_Test/*.csproj ./AdventureServer_Test
+RUN ls -la /*
+RUN ls -la /app/AdventureServer_Test/*
+RUN ls -la /app/AdventureServer/*
 RUN dotnet restore
 
 # Copy everything else and build
 COPY AdventureServer/. ./AdventureServer/
 COPY AdventureServer_Test/. ./AdventureServer_Test/
-WORKDIR /app/AdventureServer 
+WORKDIR /app
+RUN ls -la /*
+RUN ls -la /app/AdventureServer_Test/*
+RUN ls -la /app/AdventureServer/*
 RUN dotnet publish -c Release -o /app/out --no-restore
 
 # Build runtime image
