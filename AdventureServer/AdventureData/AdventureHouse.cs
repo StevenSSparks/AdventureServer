@@ -36,7 +36,7 @@ namespace AdventureServer.AdventureData
                 var _play = new PlayAdventure
                 {
                     GameID = 1,
-                    GameName = "Adventure House 2.0",
+                    GameName = "Adventure House 3.0 (.Net 5.0)",
                     InstanceID = gameid,
                     StartRoom = 20,
                     WelcomeMessage = "___________________________\r\n\r\n" +
@@ -67,6 +67,7 @@ namespace AdventureServer.AdventureData
                 var _items = new List<Item>
             {
                 new Item { Name="BREAD",  Description="A small loaf of bread. Not quite a lunch, too big for a snack.",Location=06, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
+                new Item { Name="DONUT",  Description="A small glazed donut. Not quite a lunch, too big for a snack.",Location=20, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
                 new Item { Name="BUGLE", Description="You were never very good with instruments.",Location= 20, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1" , ActionPoints=1 },
                 new Item { Name="APPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 07, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints = 10 },
                 new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 24, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked", ActionPoints=100},

@@ -380,12 +380,15 @@ namespace AdventureServer
                 "bite" => "use",
                 "taste" => "use",
                 "unlock" => "use",
+                "lock" => "use",
                 "examine" => "look",
                 "Inventory" => "inv",
                 "scare" => "shoo",
                 "kiss" => "pet",
                 "hug" => "pet",
                 "restart" => "quit",
+                "score" => "points",
+                "result" => "points",
                 _ => cmd,
             };
 
@@ -848,8 +851,15 @@ namespace AdventureServer
             if (cs.Command == "throw") { (p, cs) = ActionUseItem(p, cs); }
 
             // control command 
-            // quit
-            // in
+            if (cs.Command == "health") { cs.Message = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax); }
+            if (cs.Command == "points") { cs.Message = GetPlayerPointsMessage(p); } 
+            if (cs.Command == "quit") { if (!IsPlayerDead(p)) { p.Player.HealthCurrent = 0; } else { cs.Message = "You are dead - try newgame."; } }
+            if (cs.Command == "newgame") 
+            {
+                p = adventureHouse.SetupAdventure(p.InstanceID);
+                cs.Message = "Game has been reset. Enjoy!";
+
+            }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
@@ -858,7 +868,10 @@ namespace AdventureServer
         {
             var requesteditem = cs.Modifier.ToLower();
 
-            if (cs.Command == "get")
+            var dead = IsPlayerDead(p);
+
+
+            if ((cs.Command == "get") & (!dead))
             {
                 // var room = GetRoom(p.Rooms, p.Player.Room);
                 var item = GetItemDetails(requesteditem, p.Items);
@@ -885,8 +898,9 @@ namespace AdventureServer
                     cs.Message = GetFunMessage(p.Messages, "getfailed", cs.Modifier) + "\r\n";
                 }
             }
+            else { if (dead) { cs.Message = "Dead people don't need stuff";  } }
 
-            if (cs.Command == "drop")
+            if ((cs.Command == "drop") & (!dead))
             {
                 var room = GetRoom(p.Rooms, p.Player.Room);
                 var item = GetItemDetails(requesteditem, p.Items);
@@ -909,6 +923,7 @@ namespace AdventureServer
                     cs.Message = GetFunMessage(p.Messages, "dropfailed", cs.Modifier) + "\r\n";
                 }
             }
+            else { if ((cs.Command == "drop") & (dead)) { cs.Message = "Dead people don't need stuff"; } }
 
             if (cs.Command == "pet")
             {
@@ -937,7 +952,7 @@ namespace AdventureServer
 
             }
 
-            if (cs.Command == "shoo")
+            if ((cs.Command == "shoo") & (!dead))
             {
                 var room = GetRoom(p.Rooms, p.Player.Room);
                 var item = GetItemDetails(requesteditem, p.Items);
@@ -959,6 +974,7 @@ namespace AdventureServer
                     cs.Message = GetFunMessage(p.Messages, "any", cs.Modifier) + "\r\n";
                 }
             }
+            else { if ((cs.Command == "shoo") & (dead)) { cs.Message = "Dead people cannot scare pets! "; } }
 
             if (cs.Command == "inv")
             {
@@ -985,7 +1001,7 @@ namespace AdventureServer
                     {
                         if ((item.Location == 9999) || (item.Location == p.Player.Room))
                         {
-                            cs.Message = item.Description;
+                            cs.Message = "You look at the " + cs.Modifier.ToLower() +" and see -"+ item.Description;
                         }
                         else
                         {
@@ -1012,7 +1028,7 @@ namespace AdventureServer
             var requesteditem = cs.Modifier.ToLower();
             var item = GetItemDetails(requesteditem, p.Items);
 
-            if (item != null)
+            if ((item != null) & (!IsPlayerDead(p)))
             {   // Check to see if the item is in our pack
                 if (item.Location == 9999)
                 {
@@ -1061,13 +1077,26 @@ namespace AdventureServer
                                     var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
                                     var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
 
-                                    p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
-                                    if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
+                                    if (p.Rooms[unlockfromroom].Desc == unlockedroomdesc) // allows to toggle locked and unlocked
+                                    {
+                                        p.Rooms[unlockfromroom].Desc = lockedroomdesc;
+                                        if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = 99; }
+                                        if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = 99; }
+                                        if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = 99; }
+                                        if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = 99; }
+                                        if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = 99; }
+                                        if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = 99; }
+                                    }
+                                    else
+                                    {
+                                        p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
+                                        if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
+                                        if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
+                                        if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
+                                        if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
+                                        if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
+                                        if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
+                                    }
 
                                     p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for unlock item
 
@@ -1081,6 +1110,8 @@ namespace AdventureServer
                             p.Player.Room = Convert.ToInt32(item.ActionValue);
                             p.Player = SetPlayerPoints(false, cs.Modifier, p);
                             cs.Message = "A magicial set of fingers has dropped you in this room..";
+
+                            p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
                         }
 
                     }
@@ -1090,7 +1121,7 @@ namespace AdventureServer
             }
             else{ cs.Valid = false; }
 
-            if (cs.Valid == false) { cs.Message = GetFunMessage(p.Messages, command + "Failed", cs.Modifier); }
+            if (cs.Valid == false) { if (!IsPlayerDead(p)) { cs.Message = GetFunMessage(p.Messages, command + "Failed", cs.Modifier); } else { cs.Message = "You are dead. You can't use the " + cs.Modifier.ToLower() + "."; } }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
