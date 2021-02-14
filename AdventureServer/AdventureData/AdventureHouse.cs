@@ -61,7 +61,7 @@ namespace AdventureServer.AdventureData
                 return _play;
             }
 
-            private List<Item> Items()
+            private static List<Item> Items()
             {
 
                 var _items = new List<Item>
