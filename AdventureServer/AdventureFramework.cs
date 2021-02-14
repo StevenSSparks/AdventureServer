@@ -156,7 +156,7 @@ namespace AdventureServer
 
         #region Set Player Points and Health
 
-        private Player SetPlayerPoints(bool isgeneric, string ItemorRoomName, PlayAdventure p)
+        private static Player SetPlayerPoints(bool isgeneric, string ItemorRoomName, PlayAdventure p)
         {
             Room rm;
             Item item;
@@ -312,7 +312,7 @@ namespace AdventureServer
             return cs;
         }
 
-        private CommandState ParseCommand(GameMove gm)
+        private static CommandState ParseCommand(GameMove gm)
         {
             // Parse the command
             // take into account messy typing with extra spaces front, back and between
@@ -365,7 +365,7 @@ namespace AdventureServer
             return cs;
         }
 
-        private string ParseFindCommandSynonym(string cmd)
+        private static string ParseFindCommandSynonym(string cmd)
         {
             // TODO: sometime make this list driven
 
@@ -393,15 +393,6 @@ namespace AdventureServer
             };
 
         }
-
-
-        // Actions result in the player completing and activity
-        // Actions that are a single word are a command or a short move
-        // Short moves are 1 to 3 characters, commands are > 3 characters
-        // All actions need to have 2 part such as eat pie (action item)
-        // actions have to match the permitted action assocated with an item
-
-        // First we will check for Command [Actions]
 
         #endregion Game Command Parse
 
@@ -474,13 +465,13 @@ namespace AdventureServer
 
             string healthActionMessage = "";
 
-            if (gmr.HealthReport == "Dead")
+            if (gmr.HealthReport.ToLower() == "dead")
             {
                 healthActionMessage = GetFunMessage(p.Messages, "dead", "") + "\r\n";
                 p.Player.PlayerDead = true;
             }
 
-            if (gmr.HealthReport == "Bad!")
+            if (gmr.HealthReport.ToLower() == "bad")
             {
                 healthActionMessage = GetFunMessage(p.Messages, "bad", "") + "\r\n";
             }
@@ -507,24 +498,6 @@ namespace AdventureServer
             return gmr;
         }
 
-        private GameMoveResult QuitGame(GameMove gm)
-        {
-            GameMoveResult gmr = new GameMoveResult();
-
-            if (DeleteInstance(gm.InstanceID))
-            {
-                gmr.InstanceID = "-1";
-                gmr.ItemsMessage = "";
-                gmr.RoomMessage = "Game Over";
-            }
-            else
-            {
-                gmr.ItemsMessage = "Please Close the Client";
-                gmr.RoomMessage = "Delete Failed. Looks like you are stuck.";
-            };
-
-            return gmr;
-        }
 
         #endregion Primary Game Command Processing
 
@@ -619,7 +592,7 @@ namespace AdventureServer
 
         #region String Generation Methods
 
-        private string GetRoomInventory(int room, List<Item> Items)
+        private static string GetRoomInventory(int room, List<Item> Items)
         {
             string _itemstring = "";
             int count = 0;
@@ -642,7 +615,7 @@ namespace AdventureServer
 
         }
 
-        private string GetRoomItemsList(int RoomNumber, List<Item> Items, bool verbose)
+        private static string GetRoomItemsList(int RoomNumber, List<Item> Items, bool verbose)
         {
             string _result = GetRoomInventory(RoomNumber, Items);
 
@@ -654,7 +627,7 @@ namespace AdventureServer
             }
         }
 
-        private string GetRoomPath(Room rm)
+        private static string GetRoomPath(Room rm)
         {
             // gets the available list of path ouf of a room and returns a string with the path. 
 
@@ -705,24 +678,27 @@ namespace AdventureServer
 
         }
 
-        private string GetHealthReport(int current, int max)
+        private static string GetHealthReport(int current, int max)
         {
             double hp = (double)current / max;
 
-            if (hp >= .7) { return "Great!"; }
-            else if (hp >= .5) { return "Okay"; }
-            else if (hp >= .3) { return "Bad!"; }
-            else if (hp >= .1) { return "Horriable!!"; }
-            else return "Dead";
+            return hp switch
+            {
+                >= .7 => "Great",
+                >= .5 => "Okay",
+                >= .3 => "Bad",
+                >= .1 => "Horriable",
+                _ => "Dead"
+            };
         }
 
-        private Item GetItemDetails(string name, List<Item> Items)
+        private static Item GetItemDetails(string name, List<Item> Items)
         {
             var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower()));
             return _result;
         }
 
-        private string GetHasPetMessage(List<Item> Items, List<Message> messages, string eol)
+        private static string GetHasPetMessage(List<Item> Items, List<Message> messages, string eol)
         { // checks for item in pet slot and returns message for room description
 
             var _result = Items.FirstOrDefault(t => t.Location == 9998);
@@ -730,28 +706,7 @@ namespace AdventureServer
             return GetFunMessage(messages, "petfollow", _result.Name) + eol;
         }
 
-        private string GetItemDesc(string name, List<Item> Items)
-        {
-            var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower())).Description.ToString();
-            if (_result == null) { _result = ""; }
-            return _result;
-        }
-
-        private string GetItemActoionResult(string name, List<Item> Items)
-        {
-            var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower())).Action.ToString();
-            if (_result == null) { _result = ""; }
-            return _result;
-        }
-
-        private static string GetItemActionVerb(string name, List<Item> Items)
-        {
-            var _result = Items.FirstOrDefault(t => t.Name.ToLower().Equals(name.ToLower())).ActionVerb.ToString();
-            if (_result == null) { _result = ""; }
-            return _result;
-        }
-
-        private string GetFunMessage(List<Message> messages, string action, string commandorobject)
+        private static string GetFunMessage(List<Message> messages, string action, string commandorobject)
         {
             string _message = "";
 
@@ -851,7 +806,7 @@ namespace AdventureServer
             if (cs.Command == "throw") { (p, cs) = ActionUseItem(p, cs); }
 
             // control command 
-            if (cs.Command == "health") { cs.Message = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax); }
+            if (cs.Command == "health") { cs.Message = "You feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax) + "."; }
             if (cs.Command == "points") { cs.Message = GetPlayerPointsMessage(p); } 
             if (cs.Command == "quit") { if (!IsPlayerDead(p)) { p.Player.HealthCurrent = 0; } else { cs.Message = "You are dead - try newgame."; } }
             if (cs.Command == "newgame") 
@@ -927,7 +882,7 @@ namespace AdventureServer
 
             if (cs.Command == "pet")
             {
-                var room = GetRoom(p.Rooms, p.Player.Room);
+               
                 var item = GetItemDetails(requesteditem, p.Items);
 
                 if (item is not null)
@@ -954,7 +909,7 @@ namespace AdventureServer
 
             if ((cs.Command == "shoo") & (!dead))
             {
-                var room = GetRoom(p.Rooms, p.Player.Room);
+                
                 var item = GetItemDetails(requesteditem, p.Items);
 
                 if (item is not null)
@@ -1022,110 +977,106 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> ActionUseItem(PlayAdventure p, CommandState cs)
+        private static Tuple<PlayAdventure, CommandState> ActionUseItem(PlayAdventure p, CommandState cs)
         {
             var command = cs.Command.ToLower();
             var requesteditem = cs.Modifier.ToLower();
             var item = GetItemDetails(requesteditem, p.Items);
 
-            if ((item != null) & (!IsPlayerDead(p)))
-            {   // Check to see if the item is in our pack
-                if (item.Location == 9999)
+            if ((item != null) & (!IsPlayerDead(p)) && item.Location == 9999)
+            {
+                if (item.ActionVerb.ToLower() == cs.Command.ToLower())
                 {
-                    if (item.ActionVerb.ToLower() == cs.Command.ToLower())
+
+                    if (item.ActionResult.ToLower() == "health")
                     {
+                        var currenthealth = p.Player.HealthCurrent;
+                        var newhealth = p.Player.HealthCurrent + Convert.ToInt32(item.ActionValue);
+                        p.Player.HealthCurrent = newhealth;
 
-                        if (item.ActionResult.ToLower() == "health")
+                        if (currenthealth > newhealth)
                         {
-                            var currenthealth = p.Player.HealthCurrent;
-                            var newhealth = p.Player.HealthCurrent + Convert.ToInt32(item.ActionValue);
-                            p.Player.HealthCurrent = newhealth;
-
-                            if (currenthealth > newhealth)
-                            {
-                                cs.Message = "That made you feel bad. Don't do that too much.\r\n" + "Your health is " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
-                            }
-
-                            if (newhealth > p.Player.HealthMax)
-                            {
-                                cs.Message = "That made you feel very full.\r\n" + "Currently you feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
-                            }
-                            else  if (currenthealth < newhealth)
-                            {
-                                cs.Message = "That made you feel better.\r\n" + "You currently feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
-                            }
-
-                            p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for using item
-
+                            cs.Message = "That made you feel bad. Don't do that too much.\r\n" + "Your health is " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
                         }
 
-                        if (item.ActionResult.ToLower() == "unlock")
+                        if (newhealth > p.Player.HealthMax)
                         {
-                            if (Convert.ToInt32(item.ActionValue) == p.Player.Room)
+                            cs.Message = "That made you feel very full.\r\n" + "Currently you feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
+                        }
+                        else if (currenthealth < newhealth)
+                        {
+                            cs.Message = "That made you feel better.\r\n" + "You currently feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
+                        }
+
+                        p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for using item
+
+                    }
+
+                    if (item.ActionResult.ToLower() == "unlock")
+                    {
+                        if (Convert.ToInt32(item.ActionValue) == p.Player.Room)
+                        {
+                            List<string> unlockDetails = item.ActionValue.Split("|").ToList<string>();
+                            if (unlockDetails.Count != 5)
                             {
-                                List<string> unlockDetails = item.ActionValue.Split("|").ToList<string>();
-                                if (unlockDetails.Count() != 5)
+                                cs.Message = "The magic combination to use this object is missing [error].\r\n";
+                                cs.Valid = true;
+                            }
+                            else
+                            {
+                                var unlockfromroom = Convert.ToInt32(unlockDetails[1]); // Room # that this item works
+                                var unlockdirection = unlockDetails[2]; // Direction we are unlocking 
+                                var unlocktoroom = Convert.ToInt32(unlockDetails[3]);  // Room Destination after the unlock
+                                var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
+                                var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
+
+                                if (p.Rooms[unlockfromroom].Desc == unlockedroomdesc) // allows to toggle locked and unlocked
                                 {
-                                    cs.Message = "The magic combination to use this object is missing [error].\r\n";
-                                    cs.Valid = true;
+                                    p.Rooms[unlockfromroom].Desc = lockedroomdesc;
+                                    if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = 99; }
+                                    if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = 99; }
+                                    if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = 99; }
+                                    if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = 99; }
+                                    if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = 99; }
+                                    if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = 99; }
                                 }
                                 else
                                 {
-                                    var unlockfromroom = Convert.ToInt32(unlockDetails[1]); // Room # that this item works
-                                    var unlockdirection = unlockDetails[2]; // Direction we are unlocking 
-                                    var unlocktoroom = Convert.ToInt32(unlockDetails[3]);  // Room Destination after the unlock
-                                    var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
-                                    var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
-
-                                    if (p.Rooms[unlockfromroom].Desc == unlockedroomdesc) // allows to toggle locked and unlocked
-                                    {
-                                        p.Rooms[unlockfromroom].Desc = lockedroomdesc;
-                                        if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = 99; }
-                                        if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = 99; }
-                                        if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = 99; }
-                                        if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = 99; }
-                                        if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = 99; }
-                                        if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = 99; }
-                                    }
-                                    else
-                                    {
-                                        p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
-                                        if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
-                                        if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
-                                        if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
-                                        if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
-                                        if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
-                                        if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
-                                    }
-
-                                    p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for unlock item
-
+                                    p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
+                                    if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
+                                    if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
+                                    if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
+                                    if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
+                                    if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
+                                    if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
                                 }
+
+                                p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for unlock item
+
                             }
-                            else { cs.Valid = false; }
                         }
-
-                        if (item.ActionResult.ToLower() == "teleport")
-                        {
-                            p.Player.Room = Convert.ToInt32(item.ActionValue);
-                            p.Player = SetPlayerPoints(false, cs.Modifier, p);
-                            cs.Message = "A magicial set of fingers has dropped you in this room..";
-
-                            p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
-                        }
-
+                        
+                        else { cs.Valid = false; }
                     }
-                    else { cs.Valid = false; }
+
+                    if (item.ActionResult.ToLower() == "teleport")
+                    {
+                        p.Player.Room = Convert.ToInt32(item.ActionValue);
+                        p.Player = SetPlayerPoints(false, cs.Modifier, p);
+                        cs.Message = "A magicial set of fingers has dropped you in this room..";
+
+                        p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
+                    }
+
                 }
                 else { cs.Valid = false; }
             }
-            else{ cs.Valid = false; }
+            else { cs.Valid = false; }
 
             if (cs.Valid == false) { if (!IsPlayerDead(p)) { cs.Message = GetFunMessage(p.Messages, command + "Failed", cs.Modifier); } else { cs.Message = "You are dead. You can't use the " + cs.Modifier.ToLower() + "."; } }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
-
 
         #endregion Game Actions to Activities
 
