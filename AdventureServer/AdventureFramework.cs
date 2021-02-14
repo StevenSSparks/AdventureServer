@@ -23,7 +23,7 @@ namespace AdventureServer
 
         #region Game Cache Management
 
-        private void AddPlayAdventureToCache(PlayAdventure p)
+        private void Cache_AddPlayAdventure(PlayAdventure p)
         {
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -34,20 +34,20 @@ namespace AdventureServer
 
         }
 
-        private void ReplacePlayAdventuretoCache(PlayAdventure p)
+        private void Cache_ReplacePlayAdventure(PlayAdventure p)
         {
             _gameCache.Remove(p.InstanceID);
-            AddPlayAdventureToCache(p);
+            Cache_AddPlayAdventure(p);
         }
 
-        private PlayAdventure GetPlayAdventureFromCache(string key)
+        private PlayAdventure Cache_GetPlayAdventure(string key)
         {
             var cacheEntry = _gameCache.Get<PlayAdventure>(key);
 
             return cacheEntry;
         }
 
-        private void RemovePlayAdventureFromCache(string key)
+        private void Cache_RemovePlayAdventure(string key)
         {
             _gameCache.Remove(key);
 
@@ -57,30 +57,30 @@ namespace AdventureServer
 
         #region Instance Management 
 
-        private string SetupNewInstance(int gamechoice)
+        private string GameInstance_New(int gamechoice)
         {
             var tempId = Guid.NewGuid().ToString();
             if (gamechoice == 1)
             {
                 var p = adventureHouse.SetupAdventure(tempId);
-                AddPlayAdventureToCache(p);
+                Cache_AddPlayAdventure(p);
             }
 
             return tempId;
         }
 
-        public Boolean CheckInstanceExists(string id)
+        public Boolean GameInstance_Exists(string id)
         {
-            var adventure = GetPlayAdventureFromCache(id);
+            var adventure = Cache_GetPlayAdventure(id);
 
             if (adventure.InstanceID == null) return false;
             return true;
         }
 
-        public PlayAdventure GetInstanceObject(string InstanceId)
+        public PlayAdventure GameInstance_GetObject(string InstanceId)
         {
 
-            PlayAdventure playAdventure = GetPlayAdventureFromCache(InstanceId);
+            PlayAdventure playAdventure = Cache_GetPlayAdventure(InstanceId);
             if (playAdventure.InstanceID == null)
             {
                 playAdventure.StartRoom = -1;
@@ -89,22 +89,22 @@ namespace AdventureServer
             return playAdventure;
         }
 
-        public Boolean UpdateInstance(PlayAdventure p)
+        public Boolean GameInstance_Update(PlayAdventure p)
         {
-            if (CheckInstanceExists(p.InstanceID))
+            if (GameInstance_Exists(p.InstanceID))
             {
-                ReplacePlayAdventuretoCache(p);
+                Cache_ReplacePlayAdventure(p);
                 return true;
             }
 
             return false;
         }
 
-        public Boolean DeleteInstance(string InstanceID)
+        public Boolean GameInstance_Delete(string InstanceID)
         {
-            if (CheckInstanceExists(InstanceID))
+            if (GameInstance_Exists(InstanceID))
             {
-                RemovePlayAdventureFromCache(InstanceID);
+                Cache_RemovePlayAdventure(InstanceID);
                 return true;
             }
 
@@ -114,9 +114,9 @@ namespace AdventureServer
 
         #endregion Instance Management
 
-        #region Game Management
+        #region Game Management - Interface Public Entry
 
-        public List<Game> GetGames()
+        public List<Game> ControllerEntry_GetGames()
         {
             List<Game> _games = new List<Game>
             {
@@ -127,19 +127,19 @@ namespace AdventureServer
             return _games;
         }
 
-        public GameMoveResult NewGame(int GameID)
+        public GameMoveResult ControllerEntry_NewGame(int GameID)
         {
             // If the game ID is not in the games list default to 1
-            if (!GetGames().Exists(g => g.Id == GameID))
+            if (!ControllerEntry_GetGames().Exists(g => g.Id == GameID))
             {
                 GameID = 1;
             }
 
             // setup the game instance 
-            var p = GetInstanceObject(SetupNewInstance(GameID).ToString());
+            var p = GameInstance_GetObject(GameInstance_New(GameID).ToString());
 
             //get the room details for the first room 
-            var _room = GetRoom(p.Rooms, p.Player.Room);
+            var _room = Object_GetRoom(p.Rooms, p.Player.Room);
 
             return new GameMoveResult
             {
@@ -152,11 +152,28 @@ namespace AdventureServer
             };
 
         }
+
+        public GameMoveResult ControllerEntry_GameMove(GameMove move)
+        {
+
+            if (GameInstance_Exists(move.InstanceID))
+            {
+                var gmr = Main_ProcessGameMove(move);
+                return gmr;
+            }
+            else return new GameMoveResult
+            {
+                InstanceID = "-1",
+                ItemsMessage = "",
+                RoomMessage = "Game does not exist. Please begin again."
+            };
+
+        }
         #endregion Game Management 
 
         #region Set Player Points and Health
 
-        private static Player SetPlayerPoints(bool isgeneric, string ItemorRoomName, PlayAdventure p)
+        private static Player Helper_SetPlayerPoints(bool isgeneric, string ItemorRoomName, PlayAdventure p)
         {
             Room rm;
             Item item;
@@ -201,59 +218,112 @@ namespace AdventureServer
             return p.Player;
         }
 
-        private static string GetPlayerPoints(PlayAdventure p)
-        {
-
-            return p.Player.Points.ToString();
-
-        }
-
-        private static string GetPlayerPointsString(PlayAdventure p)
-        {
-            string _result = "";
-            int cnt = 0;
-            foreach (string i in p.PointsCheckList)
-            {
-                cnt++;
-                _result += i.ToUpper();
-                if (cnt < p.PointsCheckList.Count) _result += ", ";
-
-            }
-
-            return _result;
-        }
-
-        private static string GetPlayerPointsMessage(PlayAdventure p)
-        {
-            string _result = "";
-            _result += "\r\n Total Points :" + GetPlayerPoints(p);
-            _result += "\r\n Points Keys  :" + GetPlayerPointsString(p);
-
-            return _result;
-        }
-
-        private static bool IsPlayerDead(PlayAdventure p)
+        private static bool Helper_IsPlayerDead(PlayAdventure p)
         {
             if (p.Player.HealthCurrent < 1) return true;
             return false;
         }
-        private static int SetPlayerNewHealth(PlayAdventure p)
+        private static int Helper_SetPlayerNewHealth(PlayAdventure p)
         {
             return p.Player.HealthCurrent - p.HealthStep;
         }
 
 
+        private Tuple<bool, GameMoveResult, PlayAdventure, CommandState> Helper_DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
+        {
+            cs.Message = "";
+            if (p.Player.PlayerDead == false)
+            {
+                var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                if (movecommands.Contains(cs.Command))
+                {
+
+                    List<string> ml;
+
+                    if (cs.Command == "go")
+                    {
+                        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
+                        if (ml.Contains(cs.Modifier))
+                        {
+                            cs.Valid = true;
+                        }
+                        else
+                        {
+                            cs.Valid = false;
+                        }
+                    }
+
+                    // if the command is a short move convert to word
+                    // shortcut for moves
+                    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
+                    if (ml.Contains(cs.Command))
+                    {
+                        cs = Parse_ConvertShortMove(cs.Command);
+                    }
+
+                    if (cs.Valid == true)
+                    {
+                        (p, cs) = Action_MovePlayer(p, cs);
+
+                        // update the gmr with the new room details
+
+                        gmr.RoomName = Object_GetRoom(p.Rooms, p.Player.Room).Name;
+                        gmr.RoomMessage = Object_GetRoom(p.Rooms, p.Player.Room).Desc;
+                        gmr.PlayerName = p.Player.Name;
+                        gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
+
+                        return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(true, gmr, p, cs);
+                    }
+                    else if (cs.Valid == false)
+                    {
+                        cs.Message = "Wrong Way!";
+                    }
+
+                }
+
+            }
+            else { cs.Message = GetFunMessage(p.Messages, "DeadMove".Trim(), cs.Modifier); }
+
+            return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
+
+        }
+
+        private static Boolean Helper_IsMoveDirectionOK(Room room, string direction)
+        {
+            switch (direction)
+            {
+                case "north":
+                    if (room.N < 99) return true;
+                    break;
+                case "south":
+                    if (room.S < 99) return true;
+                    break;
+                case "east":
+                    if (room.E < 99) return true;
+                    break;
+                case "west":
+                    if (room.W < 99) return true;
+                    break;
+                case "up":
+                    if (room.U < 99) return true;
+                    break;
+                case "down":
+                    if (room.D < 99) return true;
+                    break;
+            }
+            return false;
+        }
 
         #endregion Player Points
 
         #region Game Object Management 
 
-        public Room GetRoom(List<Room> rooms, int roomnumber)
+        public Room Object_GetRoom(List<Room> rooms, int roomnumber)
         {
             return (rooms.FirstOrDefault(t => t.Number == roomnumber));
         }
 
-        public List<Item> MoveItem(List<Item> invitems, string Name, int NewRoom)
+        public List<Item> Object_MoveItem(List<Item> invitems, string Name, int NewRoom)
         {
             var itemIndex = invitems.FindIndex(t => t.Name.ToLower().Equals(Name.ToLower()));
             var invitem = invitems[itemIndex];
@@ -266,7 +336,7 @@ namespace AdventureServer
 
         #region Game Command Parse
 
-        private static CommandState ParseConvertShortMove(string direction)
+        private static CommandState Parse_ConvertShortMove(string direction)
         {
             var cs = new CommandState // setup with assumed move details
             {
@@ -312,7 +382,7 @@ namespace AdventureServer
             return cs;
         }
 
-        private static CommandState ParseCommand(GameMove gm)
+        private static CommandState Parse_Command(GameMove gm)
         {
             // Parse the command
             // take into account messy typing with extra spaces front, back and between
@@ -365,7 +435,7 @@ namespace AdventureServer
             return cs;
         }
 
-        private static string ParseFindCommandSynonym(string cmd)
+        private static string Parse_FindCommandSynonym(string cmd)
         {
             // TODO: sometime make this list driven
 
@@ -398,29 +468,13 @@ namespace AdventureServer
 
         #region Primary Game Command Processing
 
-        public GameMoveResult GameMove(GameMove move)
-        {
 
-            if (CheckInstanceExists(move.InstanceID))
-            {
-                var gmr = ProcessGameMove(move);
-                return gmr;
-            }
-            else return new GameMoveResult
-            {
-                InstanceID = "-1",
-                ItemsMessage = "",
-                RoomMessage = "Game does not exist. Please begin again."
-            };
-
-        }
-
-        private GameMoveResult ProcessGameMove(GameMove move)
+        private GameMoveResult Main_ProcessGameMove(GameMove move)
         {
             var cs = new CommandState();
 
             // Get the Instance we need to process 
-            var p = GetInstanceObject(move.InstanceID);
+            var p = GameInstance_GetObject(move.InstanceID);
 
             //setup the intial response message and result
             cs.Message = "";
@@ -428,36 +482,36 @@ namespace AdventureServer
             var gmr = new GameMoveResult
             {
                 InstanceID = p.InstanceID,
-                RoomName = GetRoom(p.Rooms, p.Player.Room).Name,
-                RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc,
+                RoomName = Object_GetRoom(p.Rooms, p.Player.Room).Name,
+                RoomMessage = Object_GetRoom(p.Rooms, p.Player.Room).Desc,
                 PlayerName = p.Player.Name,
                 ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true),
                 HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax)
             };
 
             //parse the command 
-            cs = ParseCommand(move);
-            cs.Command = ParseFindCommandSynonym(cs.Command);
+            cs = Parse_Command(move);
+            cs.Command = Parse_FindCommandSynonym(cs.Command);
 
             bool playermoved;
-            (playermoved, gmr, p, cs) = DidPlayerMove(p, gmr, cs);
+            (playermoved, gmr, p, cs) = Helper_DidPlayerMove(p, gmr, cs);
 
             if (playermoved)
             {
-                return PostActionUpdate(gmr, p, cs.Message);
+                return Main_PostActionUpdate(gmr, p, cs.Message);
             }
             else
             {
-                (p, cs) = ActionProcessing(p, cs);
+                (p, cs) = Action_Processing(p, cs);
             }
 
-            return PostActionUpdate(gmr, p, cs.Message);
+            return Main_PostActionUpdate(gmr, p, cs.Message);
         }
 
-        private GameMoveResult PostActionUpdate(GameMoveResult gmr, PlayAdventure p, string actionMessage)
+        private GameMoveResult Main_PostActionUpdate(GameMoveResult gmr, PlayAdventure p, string actionMessage)
         {
             // Compute Player Health 
-            p.Player.HealthCurrent = SetPlayerNewHealth(p);
+            p.Player.HealthCurrent = Helper_SetPlayerNewHealth(p);
             gmr.HealthReport = GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
 
 
@@ -480,12 +534,12 @@ namespace AdventureServer
             gmr.PlayerName = p.Player.Name;
 
             // set room name and add to points if not already added
-            gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
-            p.Player = SetPlayerPoints(false, gmr.RoomName, p);
+            gmr.RoomName = Object_GetRoom(p.Rooms, p.Player.Room).Name;
+            p.Player = Helper_SetPlayerPoints(false, gmr.RoomName, p);
 
             // setup output message
-            gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc + " ";
-            gmr.RoomMessage += GetRoomPath(GetRoom(p.Rooms, p.Player.Room)) + "\r\n" + actionMessage + "\r\n";
+            gmr.RoomMessage = Object_GetRoom(p.Rooms, p.Player.Room).Desc + " ";
+            gmr.RoomMessage += GetRoomPath(Object_GetRoom(p.Rooms, p.Player.Room)) + "\r\n" + actionMessage + "\r\n";
             gmr.RoomMessage += GetHasPetMessage(p.Items, p.Messages, "\r\n");
             gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
 
@@ -494,7 +548,7 @@ namespace AdventureServer
                 gmr.RoomMessage += "\r\n" + healthActionMessage + "\r\n";
             }
 
-            UpdateInstance(p);
+            GameInstance_Update(p);
             return gmr;
         }
 
@@ -503,90 +557,6 @@ namespace AdventureServer
 
         #region Game Validation Methods
 
-        private Tuple<bool, GameMoveResult, PlayAdventure, CommandState> DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
-        {
-            cs.Message = "";
-            if (p.Player.PlayerDead == false)
-            {
-                var movecommands = new List<string> { "go", "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-                if (movecommands.Contains(cs.Command))
-                {
-
-                    List<string> ml;
-
-                    if (cs.Command == "go")
-                    {
-                        ml = new List<string> { "north", "south", "east", "west", "up", "down" };
-                        if (ml.Contains(cs.Modifier))
-                        {
-                            cs.Valid = true;
-                        }
-                        else
-                        {
-                            cs.Valid = false;
-                        }
-                    }
-
-                    // if the command is a short move convert to word
-                    // shortcut for moves
-                    ml = new List<string> { "nor", "sou", "eas", "wes", "up", "down", "n", "s", "e", "w", "u", "d" };
-                    if (ml.Contains(cs.Command))
-                    {
-                        cs = ParseConvertShortMove(cs.Command);
-                    }
-
-                    if (cs.Valid == true)
-                    {
-                        (p, cs) = ActionMovePlayer(p, cs);
-
-                        // update the gmr with the new room details
-
-                        gmr.RoomName = GetRoom(p.Rooms, p.Player.Room).Name;
-                        gmr.RoomMessage = GetRoom(p.Rooms, p.Player.Room).Desc;
-                        gmr.PlayerName = p.Player.Name;
-                        gmr.ItemsMessage = GetRoomItemsList(p.Player.Room, p.Items, true);
-
-                        return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(true, gmr, p, cs);
-                    }
-                    else if (cs.Valid == false)
-                    {
-                        cs.Message = "Wrong Way!";
-                    }
-
-                }
-
-            }
-            else { cs.Message = GetFunMessage(p.Messages, "DeadMove".Trim(), cs.Modifier); }
-
-            return new Tuple<bool, GameMoveResult, PlayAdventure, CommandState>(false, gmr, p, cs);
-
-        }
-
-        private static Boolean IsMoveDirectionOK(Room room, string direction)
-        {
-            switch (direction)
-            {
-                case "north":
-                    if (room.N < 99) return true;
-                    break;
-                case "south":
-                    if (room.S < 99) return true;
-                    break;
-                case "east":
-                    if (room.E < 99) return true;
-                    break;
-                case "west":
-                    if (room.W < 99) return true;
-                    break;
-                case "up":
-                    if (room.U < 99) return true;
-                    break;
-                case "down":
-                    if (room.D < 99) return true;
-                    break;
-            }
-            return false;
-        }
 
         #endregion Game Validation Methods
 
@@ -734,21 +704,49 @@ namespace AdventureServer
             return "You can't do that here.";
         }
 
+        private static string GetPlayerPoints(PlayAdventure p)
+        {
 
+            return p.Player.Points.ToString();
+
+        }
+
+        private static string GetPlayerPointsString(PlayAdventure p)
+        {
+            string _result = "";
+            int cnt = 0;
+            foreach (string i in p.PointsCheckList)
+            {
+                cnt++;
+                _result += i.ToUpper();
+                if (cnt < p.PointsCheckList.Count) _result += ", ";
+
+            }
+
+            return _result;
+        }
+
+        private static string GetPlayerPointsMessage(PlayAdventure p)
+        {
+            string _result = "";
+            _result += "\r\n Total Points :" + GetPlayerPoints(p);
+            _result += "\r\n Points Keys  :" + GetPlayerPointsString(p);
+
+            return _result;
+        }
 
         #endregion String Generation Mthods
 
         #region Game Actions to Activities
 
-
-        private Tuple<PlayAdventure, CommandState> ActionMovePlayer(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> Action_MovePlayer(PlayAdventure p, CommandState cs)
         {
             // The command will have been parsed and we will expect the direction to be in command modifier
-            var room = GetRoom(p.Rooms, p.Player.Room);
+            var room = Object_GetRoom(p.Rooms, p.Player.Room);
 
             var direction = cs.Modifier;
 
-            if (IsMoveDirectionOK(room, direction))
+            if (Helper_IsMoveDirectionOK(room, direction))
             {
                 // move player
                 switch (direction)
@@ -787,28 +785,28 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> ActionProcessing(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> Action_Processing(PlayAdventure p, CommandState cs)
         {
             // The command will have been parsed and we will expect the item to be in command modifier
 
             //aquire and drops items and pet
-            if (cs.Command == "get") { (p, cs) = ActionItemManagemet(p, cs); }
-            if (cs.Command == "drop") { (p, cs) = ActionItemManagemet(p, cs); }
-            if (cs.Command == "pet") { (p, cs) = ActionItemManagemet(p, cs); }
-            if (cs.Command == "shoo") { (p, cs) = ActionItemManagemet(p, cs); }
-            if (cs.Command == "inv") { (p, cs) = ActionItemManagemet(p, cs); }
-            if (cs.Command == "look") { (p, cs) = ActionItemManagemet(p, cs); }
+            if (cs.Command == "get") { (p, cs) = Action_ItemManagemet(p, cs); }
+            if (cs.Command == "drop") { (p, cs) = Action_ItemManagemet(p, cs); }
+            if (cs.Command == "pet") { (p, cs) = Action_ItemManagemet(p, cs); }
+            if (cs.Command == "shoo") { (p, cs) = Action_ItemManagemet(p, cs); }
+            if (cs.Command == "inv") { (p, cs) = Action_ItemManagemet(p, cs); }
+            if (cs.Command == "look") { (p, cs) = Action_ItemManagemet(p, cs); }
 
             // use item commands 
-            if (cs.Command == "eat") { (p, cs) = ActionUseItem(p, cs); }
-            if (cs.Command == "use") { (p, cs) = ActionUseItem(p, cs); }
-            if (cs.Command == "wave") { (p, cs) = ActionUseItem(p, cs); }
-            if (cs.Command == "throw") { (p, cs) = ActionUseItem(p, cs); }
+            if (cs.Command == "eat") { (p, cs) = Action_UseItem(p, cs); }
+            if (cs.Command == "use") { (p, cs) = Action_UseItem(p, cs); }
+            if (cs.Command == "wave") { (p, cs) = Action_UseItem(p, cs); }
+            if (cs.Command == "throw") { (p, cs) = Action_UseItem(p, cs); }
 
             // control command 
             if (cs.Command == "health") { cs.Message = "You feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax) + "."; }
             if (cs.Command == "points") { cs.Message = GetPlayerPointsMessage(p); } 
-            if (cs.Command == "quit") { if (!IsPlayerDead(p)) { p.Player.HealthCurrent = 0; } else { cs.Message = "You are dead - try newgame."; } }
+            if (cs.Command == "quit") { if (!Helper_IsPlayerDead(p)) { p.Player.HealthCurrent = 0; } else { cs.Message = "You are dead - try newgame."; } }
             if (cs.Command == "newgame") 
             {
                 p = adventureHouse.SetupAdventure(p.InstanceID);
@@ -819,11 +817,11 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> ActionItemManagemet(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> Action_ItemManagemet(PlayAdventure p, CommandState cs)
         {
             var requesteditem = cs.Modifier.ToLower();
 
-            var dead = IsPlayerDead(p);
+            var dead = Helper_IsPlayerDead(p);
 
 
             if ((cs.Command == "get") & (!dead))
@@ -842,7 +840,7 @@ namespace AdventureServer
                         }
                         else
                         {
-                            p.Items = MoveItem(p.Items, requesteditem, 9999); // 9999 is backpack
+                            p.Items = Object_MoveItem(p.Items, requesteditem, 9999); // 9999 is backpack
                             cs.Message = GetFunMessage(p.Messages, "getsuccess", cs.Modifier);
                         }
                     }
@@ -857,14 +855,14 @@ namespace AdventureServer
 
             if ((cs.Command == "drop") & (!dead))
             {
-                var room = GetRoom(p.Rooms, p.Player.Room);
+                var room = Object_GetRoom(p.Rooms, p.Player.Room);
                 var item = GetItemDetails(requesteditem, p.Items);
 
                 if (item is not null)
                 {
                     if (item.Location == 9999)
                     {
-                        p.Items = MoveItem(p.Items, requesteditem, room.Number);
+                        p.Items = Object_MoveItem(p.Items, requesteditem, room.Number);
                         cs.Message = GetFunMessage(p.Messages, "dropsuccess", cs.Modifier) + "\r\n";
                     }
 
@@ -890,9 +888,9 @@ namespace AdventureServer
                     // You get "pet" the pet over and over to get the messages as long as its in the room on pet slot
                     if ((item.Location == p.Player.Room) | (item.Location == 9998))
                     {
-                        p.Items = MoveItem(p.Items, requesteditem, 9998);
+                        p.Items = Object_MoveItem(p.Items, requesteditem, 9998);
                         cs.Message = GetFunMessage(p.Messages, "getpet", cs.Modifier) + "\r\n";
-                        p.Player = SetPlayerPoints(false, item.Name, p);
+                        p.Player = Helper_SetPlayerPoints(false, item.Name, p);
                     }
 
                 }
@@ -916,7 +914,7 @@ namespace AdventureServer
                 {
                     if (item.Location == 9998)
                     {
-                        p.Items = MoveItem(p.Items, requesteditem, Convert.ToInt16(item.ActionValue));
+                        p.Items = Object_MoveItem(p.Items, requesteditem, Convert.ToInt16(item.ActionValue));
                         cs.Message = GetFunMessage(p.Messages, "shoosuccess", cs.Modifier) + "\r\n";
                     }
 
@@ -977,13 +975,13 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private static Tuple<PlayAdventure, CommandState> ActionUseItem(PlayAdventure p, CommandState cs)
+        private static Tuple<PlayAdventure, CommandState> Action_UseItem(PlayAdventure p, CommandState cs)
         {
             var command = cs.Command.ToLower();
             var requesteditem = cs.Modifier.ToLower();
             var item = GetItemDetails(requesteditem, p.Items);
 
-            if ((item != null) & (!IsPlayerDead(p)) && item.Location == 9999)
+            if ((item != null) & (!Helper_IsPlayerDead(p)) && item.Location == 9999)
             {
                 if (item.ActionVerb.ToLower() == cs.Command.ToLower())
                 {
@@ -1008,52 +1006,48 @@ namespace AdventureServer
                             cs.Message = "That made you feel better.\r\n" + "You currently feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax);
                         }
 
-                        p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for using item
+                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); // set points for using item
 
                     }
 
                     if (item.ActionResult.ToLower() == "unlock")
                     {
-                        if (Convert.ToInt32(item.ActionValue) == p.Player.Room)
+                        List<string> unlockDetails = item.ActionValue.Split("|").ToList<string>();
+
+                        var unlockfromroom = Convert.ToInt32(unlockDetails[1]); // Room # that this item works
+                        var unlockdirection = unlockDetails[2]; // Direction we are unlocking 
+                        var unlocktoroom = Convert.ToInt32(unlockDetails[3]);  // Room Destination after the unlock
+                        var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
+                        var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
+
+
+                        if (Convert.ToInt32(unlockfromroom) == p.Player.Room)
                         {
-                            List<string> unlockDetails = item.ActionValue.Split("|").ToList<string>();
-                            if (unlockDetails.Count != 5)
+                         
+                            if (p.Rooms[unlockfromroom].Desc == unlockedroomdesc) // allows to toggle locked and unlocked
                             {
-                                cs.Message = "The magic combination to use this object is missing [error].\r\n";
-                                cs.Valid = true;
+                                p.Rooms[unlockfromroom].Desc = lockedroomdesc;
+                                if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = 99; }
+                                if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = 99; }
+                                if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = 99; }
+                                if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = 99; }
+                                if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = 99; }
+                                if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = 99; }
                             }
                             else
                             {
-                                var unlockfromroom = Convert.ToInt32(unlockDetails[1]); // Room # that this item works
-                                var unlockdirection = unlockDetails[2]; // Direction we are unlocking 
-                                var unlocktoroom = Convert.ToInt32(unlockDetails[3]);  // Room Destination after the unlock
-                                var unlockedroomdesc = unlockDetails[4]; // Room Desc after an unlock
-                                var lockedroomdesc = unlockDetails[5]; // room Desc after a lock
-
-                                if (p.Rooms[unlockfromroom].Desc == unlockedroomdesc) // allows to toggle locked and unlocked
-                                {
-                                    p.Rooms[unlockfromroom].Desc = lockedroomdesc;
-                                    if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = 99; }
-                                    if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = 99; }
-                                    if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = 99; }
-                                    if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = 99; }
-                                    if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = 99; }
-                                    if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = 99; }
-                                }
-                                else
-                                {
-                                    p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
-                                    if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
-                                    if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
-                                }
-
-                                p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for unlock item
-
+                                p.Rooms[unlockfromroom].Desc = unlockedroomdesc;
+                                if (unlockdirection.ToLower() == "n") { p.Rooms[unlockfromroom].N = unlocktoroom; }
+                                if (unlockdirection.ToLower() == "s") { p.Rooms[unlockfromroom].S = unlocktoroom; }
+                                if (unlockdirection.ToLower() == "e") { p.Rooms[unlockfromroom].E = unlocktoroom; }
+                                if (unlockdirection.ToLower() == "w") { p.Rooms[unlockfromroom].W = unlocktoroom; }
+                                if (unlockdirection.ToLower() == "u") { p.Rooms[unlockfromroom].U = unlocktoroom; }
+                                if (unlockdirection.ToLower() == "d") { p.Rooms[unlockfromroom].D = unlocktoroom; }
                             }
+
+                            p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); // set points for unlock item
+
+                            
                         }
                         
                         else { cs.Valid = false; }
@@ -1062,10 +1056,10 @@ namespace AdventureServer
                     if (item.ActionResult.ToLower() == "teleport")
                     {
                         p.Player.Room = Convert.ToInt32(item.ActionValue);
-                        p.Player = SetPlayerPoints(false, cs.Modifier, p);
+                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p);
                         cs.Message = "A magicial set of fingers has dropped you in this room..";
 
-                        p.Player = SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
+                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
                     }
 
                 }
@@ -1073,7 +1067,7 @@ namespace AdventureServer
             }
             else { cs.Valid = false; }
 
-            if (cs.Valid == false) { if (!IsPlayerDead(p)) { cs.Message = GetFunMessage(p.Messages, command + "Failed", cs.Modifier); } else { cs.Message = "You are dead. You can't use the " + cs.Modifier.ToLower() + "."; } }
+            if (cs.Valid == false) { if (!Helper_IsPlayerDead(p)) { cs.Message = GetFunMessage(p.Messages, command + "Failed", cs.Modifier); } else { cs.Message = "You are dead. You can't use the " + cs.Modifier.ToLower() + "."; } }
 
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }

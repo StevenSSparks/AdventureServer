@@ -8,11 +8,11 @@ namespace AdventureServer.Interfaces
 {
     public interface IPlayAdventure 
     {
-        public GameMoveResult NewGame(int GameID);
+        public GameMoveResult ControllerEntry_NewGame(int GameID);
 
-        public List<Game> GetGames();
+        public List<Game> ControllerEntry_GetGames();
 
-        GameMoveResult GameMove(GameMove gameMove);
+        GameMoveResult ControllerEntry_GameMove(GameMove gameMove);
 
     }
 }

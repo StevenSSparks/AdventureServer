@@ -36,7 +36,7 @@ namespace AdventureServer_Test
         public void TestCreateNewGame()
         {
            
-            var getadv = _adventureFramework.NewGame(1);
+            var getadv = _adventureFramework.ControllerEntry_NewGame(1);
             Assert.IsTrue(getadv.InstanceID.Length > 10);
 
         }
@@ -45,11 +45,11 @@ namespace AdventureServer_Test
         public void TestItemMovemementAndCache()
         {
             var adv = new PlayAdventure();
-            var newadv = _adventureFramework.NewGame(1);
-            adv = _adventureFramework.GetInstanceObject(newadv.InstanceID);
-            adv.Items = _adventureFramework.MoveItem(adv.Items, "bugle", 9999);
-            _adventureFramework.UpdateInstance(adv);
-            adv = _adventureFramework.GetInstanceObject(adv.InstanceID);
+            var newadv = _adventureFramework.ControllerEntry_NewGame(1);
+            adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            adv.Items = _adventureFramework.Object_MoveItem(adv.Items, "bugle", 9999);
+            _adventureFramework.GameInstance_Update(adv);
+            adv = _adventureFramework.GameInstance_GetObject(adv.InstanceID);
             var itemloc = adv.Items.Find(i => i.Name.ToLower() == "bugle").Location;
             Assert.IsTrue(itemloc == 9999);
  
