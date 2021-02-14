@@ -10,11 +10,11 @@ RUN dotnet restore
 # Copy everything else and build
 COPY AdventureServer/. ./AdventureServer/
 COPY AdventureServer_Test/. ./AdventureServer_Test/
-WORKDIR /appbuild/AdventureServer 
-RUN dotnet publish -c Release -o /appbuild/out --no-restore
+WORKDIR /app/AdventureServer 
+RUN dotnet publish -c Release -o /app/out --no-restore
 
 # Build runtime image
 FROM microsoft/aspnetcore:5.0
-WORKDIR /app/out
+WORKDIR /app
 COPY --from=build-env /app/out ./
 ENTRYPOINT ["dotnet", "AdventureServer.dll"]
