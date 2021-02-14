@@ -63,7 +63,6 @@ namespace AdventureServer_Test
         [Test]
         public void PlayAdventureTest()
         {
-
             var adv = new PlayAdventure();
             var newadv = _adventureFramework.ControllerEntry_NewGame(1);
             adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
