@@ -516,7 +516,6 @@ namespace AdventureServer
 
 
             // This provides the output to the user after we process the action and resulting activity
-
             string healthActionMessage = "";
 
             if (gmr.HealthReport.ToLower() == "dead")
@@ -807,6 +806,7 @@ namespace AdventureServer
             if (cs.Command == "health") { cs.Message = "You feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax) + "."; }
             if (cs.Command == "points") { cs.Message = GetPlayerPointsMessage(p); } 
             if (cs.Command == "quit") { if (!Helper_IsPlayerDead(p)) { p.Player.HealthCurrent = 0; } else { cs.Message = "You are dead - try newgame."; } }
+            if (cs.Command == "help") { cs.Message = p.GameHelp; }
             if (cs.Command == "newgame") 
             {
                 p = adventureHouse.SetupAdventure(p.InstanceID);
@@ -889,8 +889,9 @@ namespace AdventureServer
                     if ((item.Location == p.Player.Room) | (item.Location == 9998))
                     {
                         p.Items = Object_MoveItem(p.Items, requesteditem, 9998);
-                        cs.Message = GetFunMessage(p.Messages, "getpet", cs.Modifier) + "\r\n";
+                        cs.Message = GetFunMessage(p.Messages, "petsuccess", cs.Modifier) + "\r\n";
                         p.Player = Helper_SetPlayerPoints(false, item.Name, p);
+
                     }
 
                 }
@@ -898,8 +899,6 @@ namespace AdventureServer
 
                 if (cs.Valid == false)
                 {
-                    cs.Valid = false;
-                    // set message about the wrong direction
                     cs.Message = GetFunMessage(p.Messages, "any", cs.Modifier) + "\r\n";
                 }
 
@@ -954,7 +953,7 @@ namespace AdventureServer
                     {
                         if ((item.Location == 9999) || (item.Location == p.Player.Room))
                         {
-                            cs.Message = "You look at the " + cs.Modifier.ToLower() +" and see -"+ item.Description;
+                            cs.Message = "You look at the " + cs.Modifier.ToLower() +" and see: "+ item.Description;
                         }
                         else
                         {

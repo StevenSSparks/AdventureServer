@@ -33,21 +33,22 @@ namespace AdventureServer.AdventureData
 
                 var _gamerTag = new GamerTags().RandomTag();
 
-                var _play = new PlayAdventure
-                {
-                    GameID = 1,
-                    GameName = "Adventure House 3.0 (.Net 5.0)",
+            var _play = new PlayAdventure
+            {
+                GameID = 1,
+                GameName = "Adventure House 3.0 (.Net 5.0)",
+                GameHelp = GetAdventureHelpText(),
                     InstanceID = gameid,
                     StartRoom = 20,
-                    WelcomeMessage = "___________________________\r\n\r\n" +
+                    WelcomeMessage = "___________________________\r\n" +
                                      " Dear " + _gamerTag + ",\r\n\r\n" +
                                      " This is a simple 2 word\r\n" +
                                      " adventure game. Use simple\r\n" +
                                      " but HELPful commands to \r\n" +
-                                     " find your way out.\r\n\r\n" +
+                                     " find your way out.\r\n" +
                                      "       Good Luck! \r\n" +
-                                     "        The Management.\r\n\r\n" +
-                                     "___________________________\r\n\r\n\r\n",
+                                     "        The Management.\r\n" +
+                                     "___________________________\r\n\r\n",
                     MaxHealth = 200,
                     HealthStep = 2,
                     Items = Items(),
@@ -67,21 +68,22 @@ namespace AdventureServer.AdventureData
                 var _items = new List<Item>
             {
                 new Item { Name="BREAD",  Description="A small loaf of bread. Not quite a lunch, too big for a snack.",Location=06, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
-                new Item { Name="DONUT",  Description="A small glazed donut. Not quite a lunch, too big for a snack.",Location=20, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
-                new Item { Name="BUGLE", Description="You were never very good with instruments.",Location= 20, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1" , ActionPoints=1 },
+                new Item { Name="BUGLE", Description="A bugle. You were never very good with instruments.",Location= 20, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1" , ActionPoints=1 },
                 new Item { Name="APPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 07, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints = 10 },
                 new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 24, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked", ActionPoints=100},
                 new Item { Name="WAND", Description= "A small wooden wand.",Location = 17, Action="You wave the wand and the room fades for a second.", ActionVerb="WAVE", ActionResult = "TELEPORT", ActionValue = "1", ActionPoints=10 },
                 new Item { Name="PIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 10, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints = 10 },
                 new Item { Name="BREAD",  Description="A small loaf of bread. Not quite a lunch, too big for a snack.",Location=99, Action="It's too big for a snack. Maybe later, for lunch.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints= 10 },
-                new Item { Name="BUGLE", Description="You were never very good with instruments.",Location= 99, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1", ActionPoints =1 },
-                new Item { Name="APPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 99, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints=25 },
-                new Item { Name="KEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 99, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked" },
-                new Item { Name="WAND", Description= "A small wooden wand.",Location = 99, Action="You wave the wand and the room fades for a second.", ActionVerb="WAVE", ActionResult = "TELEPORT", ActionValue = "1", ActionPoints=1},
-                new Item { Name="PIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 99, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints=10},
-                new Item { Name="STICK", Description= "This is the developers helpful and magic stick.",Location = 00, Action= "This looks a lot a debugging tool that a developer would create to make his life easy.", ActionVerb="WAVE", ActionResult="TELEPORT", ActionValue ="99", ActionPoints=0},
                 new Item { Name="KITTEN", Description= "A delightful kitten",Location = 20, Action= "The little fuzzball of a black and white kitten just looks so adorable!", ActionVerb="PET", ActionResult="FOLLOW", ActionValue ="20", ActionPoints=50 },
-                new Item { Name="SECONDKEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 20, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked", ActionPoints=100},
+#if (DEBUG)                  
+                    new Item { Name="STICK", Description= "This is the developers helpful and magic stick.",Location = 00, Action= "This looks a lot a debugging tool that a developer would create to make his life easy.", ActionVerb="WAVE", ActionResult="TELEPORT", ActionValue ="88", ActionPoints=0},
+                    new Item { Name="AWAND", Description= "A small wooden wand.",Location = 99, Action="You wave the wand and the room fades for a second.", ActionVerb="WAVE", ActionResult = "TELEPORT", ActionValue = "1", ActionPoints=1},
+                    new Item { Name="ADONUT",  Description="A small glazed donut. Not quite a lunch, too big for a snack.",Location=88, Action="The bread was fresh and warm.", ActionVerb = "EAT", ActionResult="HEALTH", ActionValue = "100", ActionPoints = 5},
+                    new Item { Name="ABUGLE", Description="A You were never very good with instruments.",Location= 88, Action="You try to no avail to produce something that could constitute music.", ActionVerb ="USE", ActionResult = "HEALTH", ActionValue = "-1", ActionPoints =1 },
+                    new Item { Name="AAPPLE",Description= "A nice, red fruit that looks rather apetizing.", Location = 88, Action="Tastes just as good as it looked.", ActionVerb = "EAT", ActionResult = "HEALTH", ActionValue = "25", ActionPoints=25 },
+                    new Item { Name="AKEY",Description= "A shiny, aesthetically pleasing key. Must open something.", Location = 88, Action= "The key fits perfectly and the door unlocked with some effort.", ActionVerb="USE", ActionResult = "UNLOCK", ActionValue = "1|E|0|This is the entrance. The door is unlocked.|This is the entrance. Door is now unlocked" },
+                    new Item { Name="APIE", Description= "A small slice of apple pie. Mouthwatering.",Location = 88, Action= "A little cold, but there never really a good reason to turn down pie.", ActionVerb="EAT", ActionResult="HEALTH", ActionValue ="100", ActionPoints=10},
+#endif
                 new Item { Name="ROCK", Description= "A magic rock",Location = 19, Action= "This looks more like poop than a rock. Might want to get rid of this thing soon.", ActionVerb="THROW", ActionResult="TELEPORT", ActionValue ="95", ActionPoints=10 }
            };
 
@@ -112,11 +114,18 @@ namespace AdventureServer.AdventureData
                 new Room { Number = 17, RoomPoints=5 ,Name = "Main Bathroom", Desc = "The main bathroom with a large bathtub that is full of bubble bath. The water looks dirty.", N = 99, S = 99, E = 13, W = 99, U = 99, D = 99 },
                 new Room { Number = 18, RoomPoints=5 ,Name = "Master Bedroom", Desc = "The master bedroom with an inviting king size bed. The room is messy and it seems like they had a party here.", N = 21, S = 13, E = 19, W = 99, U = 99, D = 99 },
                 new Room { Number = 19, RoomPoints=5 ,Name = "Master Closet", Desc = "This is a long and narrow walk-in closet. A good place to put stairs to an attic.", N = 99, S = 99, E = 99, W = 18, U = 20, D = 99 },
-                new Room { Number = 20, RoomPoints=0 ,Name = "Attic", Desc = "You are in the Adventure house attic. This room is smelly and dark.", N = 99, S = 99, E = 99, W = 99, U = 99, D = 19 },
+#if (DEBUG)
+                    new Room { Number = 20, RoomPoints=0 ,Name = "Attic", Desc = "You are in the Adventure house attic. This room is smelly and dark.", N = 99, S = 99, E = 99, W = 99, U = 88, D = 19 },
+#else
+                    new Room { Number = 20, RoomPoints=0 ,Name = "Attic", Desc = "You are in the Adventure house attic. This room is smelly and dark.", N = 99, S = 99, E = 99, W = 99, U = 99, D = 19 },
+#endif                
                 new Room { Number = 21, RoomPoints=5 ,Name = "Master BathRoom", Desc = "Warm master bedroom with a shower and tub.", N = 99, S = 18, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 22, RoomPoints=5 ,Name = "Children's Room", Desc = "Clean children's room with twin beds.", N = 99, S = 99, E = 14, W = 99, U = 99, D = 99 },
                 new Room { Number = 23, RoomPoints=5 ,Name = "Entertainment Room", Desc = "This is a very inviting play room with games and toys.", N = 14, S = 99, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 24, RoomPoints=50 ,Name = "Patio", Desc = "You are standing on a finely crafted wooden patio.", N = 99, S = 99, E = 06, W = 99, U = 99, D = 99 },
+#if (DEBUG)
+                 new Room { Number = 88, RoomPoints=50 ,Name = "Debug Room", Desc = "The Magic Debug Room Up - Leads to the Door, Down leads to the Attic", N = 99, S = 99, E = 99, W = 99, U = 1, D = 20 },
+#endif
                 new Room { Number = 93, RoomPoints=50 ,Name = "Glowing Ladder", Desc = "You are on a what seems like and endless glowing ladder. You see magic spiraling vortex. ", N = 99, S = 99, E = 19, W = 99, U = 95, D = 94 },
                 new Room { Number = 94, RoomPoints=50 ,Name = "Mystery Ladder", Desc = "You climbed on to the ladder and your memory of how to get back fades. You are on a what seems like and endless magic ladder.", N = 99, S = 99, E = 99, W = 99, U = 93, D = 95 },
                 new Room { Number = 95, RoomPoints=50 ,Name = "Magic Room", Desc = "A magic room. The walls sparkle and shine. This room seems like a very happy place. You see 4 doors and ladders leading up and down", N = 20, S = 20, E = 20, W = 20, U = 94, D = 93 }

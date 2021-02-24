@@ -10,6 +10,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\img\AdventureHouse1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\img\AdventureHouse2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\img\AdventureHouse3.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\img\adventuresserver1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

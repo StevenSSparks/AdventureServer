@@ -10,6 +10,7 @@ namespace AdventureServer.Models
         // TODO: add a lifetime for this object so we can clear out the instances or use a cache
         public int GameID;
         public string GameName;
+        public string GameHelp;
         public string InstanceID;
         public string WelcomeMessage;
         public int StartRoom;
