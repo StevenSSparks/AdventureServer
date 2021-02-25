@@ -11,6 +11,7 @@ namespace AdventureServer.Controllers
     public class WelcomeController : Controller
     {
         [Route("/")]
+        [HttpGet]
         public IActionResult Index()
         {
             int numTimes = 0;

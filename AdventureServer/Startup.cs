@@ -58,7 +58,7 @@ namespace AdventureServer
             app.UseSwagger();
             app.UseSwaggerUI(c => {
 
-                c.SwaggerEndpoint("../swagger/v1/swagger.json", "Adventure Server API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Adventure Server API v1");
 
                 });
 
