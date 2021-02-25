@@ -15,7 +15,11 @@ namespace AdventureServer.Controllers
     {
         private readonly IPlayAdventure _playAdventure;
 
-        public AdventureController(IPlayAdventure playAdventure) => _playAdventure = playAdventure;
+
+        public AdventureController(IPlayAdventure playAdventure)
+        {
+            _playAdventure = playAdventure;
+        }
 
         // List of Games in the Game Data Store
         [Route("/api/Adventure/list")]
