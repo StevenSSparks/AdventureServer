@@ -11,7 +11,6 @@ using AdventureServer.AdventureData;
 namespace AdventureServer.Controllers
 {
 
-    // [ApiExplorerSettings(IgnoreApi = true)]
     public class PlayAdventureController : Controller
     {
         private readonly AdventureController _adventureController;

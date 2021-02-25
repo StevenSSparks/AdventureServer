@@ -7,19 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdventureServer.Controllers
 {
-    // [ApiExplorerSettings(IgnoreApi = true)]
     public class WelcomeController : Controller
     {
         [Route("/")]
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
-            int numTimes = 0;
-
-            ViewBag.Title = "Adventure Server 1.0";
-            ViewData["Message"] = "";
-            ViewData["NumTimes"] = numTimes;
-
+            // Returns a Static HTML Page
             return View();
         }
 
