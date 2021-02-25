@@ -124,7 +124,7 @@ namespace AdventureServer.AdventureData
                 new Room { Number = 23, RoomPoints=5 ,Name = "Entertainment Room", Desc = "This is a very inviting play room with games and toys.", N = 14, S = 99, E = 99, W = 99, U = 99, D = 99 },
                 new Room { Number = 24, RoomPoints=50 ,Name = "Patio", Desc = "You are standing on a finely crafted wooden patio.", N = 99, S = 99, E = 06, W = 99, U = 99, D = 99 },
 #if (DEBUG)
-                 new Room { Number = 88, RoomPoints=50 ,Name = "Debug Room", Desc = "The Magic Debug Room Up - Leads to the Door, Down leads to the Attic", N = 99, S = 99, E = 99, W = 99, U = 1, D = 20 },
+                new Room { Number = 88, RoomPoints=50 ,Name = "Debug Room", Desc = "The Magic Debug Room Up - Leads to the Door, Down leads to the Attic", N = 99, S = 99, E = 99, W = 99, U = 1, D = 20 },
 #endif
                 new Room { Number = 93, RoomPoints=50 ,Name = "Glowing Ladder", Desc = "You are on a what seems like and endless glowing ladder. You see magic spiraling vortex. ", N = 99, S = 99, E = 19, W = 99, U = 95, D = 94 },
                 new Room { Number = 94, RoomPoints=50 ,Name = "Mystery Ladder", Desc = "You climbed on to the ladder and your memory of how to get back fades. You are on a what seems like and endless magic ladder.", N = 99, S = 99, E = 99, W = 99, U = 93, D = 95 },

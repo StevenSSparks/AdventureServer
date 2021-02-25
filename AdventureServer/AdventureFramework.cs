@@ -229,7 +229,7 @@ namespace AdventureServer
         }
 
 
-        private Tuple<bool, GameMoveResult, PlayAdventure, CommandState> Helper_DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
+        private static Tuple<bool, GameMoveResult, PlayAdventure, CommandState> Helper_DidPlayerMove(PlayAdventure p, GameMoveResult gmr, CommandState cs)
         {
             cs.Message = "";
             if (p.Player.PlayerDead == false)
@@ -318,12 +318,12 @@ namespace AdventureServer
 
         #region Game Object Management 
 
-        public Room Object_GetRoom(List<Room> rooms, int roomnumber)
+        private static Room Object_GetRoom(List<Room> rooms, int roomnumber)
         {
             return (rooms.FirstOrDefault(t => t.Number == roomnumber));
         }
 
-        public List<Item> Object_MoveItem(List<Item> invitems, string Name, int NewRoom)
+        private static List<Item> Object_MoveItem(List<Item> invitems, string Name, int NewRoom)
         {
             var itemIndex = invitems.FindIndex(t => t.Name.ToLower().Equals(Name.ToLower()));
             var invitem = invitems[itemIndex];
@@ -598,15 +598,16 @@ namespace AdventureServer
 
         private static string GetRoomPath(Room rm)
         {
-            // gets the available list of path ouf of a room and returns a string with the path. 
+            // gets the available list of path out of a room and returns a string with the path. 
 
             string _result = "";
 
             int pc = 0;  // position count
-            int cs = 0; // comman seperator 
+            int cs = 0;  // comman seperator 
             int ac = 99; // if the and counter is not 99 then we won't add a comma
 
-            // in the data if the room is 99 then its not a valid direction
+            // First figure out how many directions we can follow. Add +1 to each direction that is not 99
+            // This is use to know when we want to add 'and' or just a comma
 
             if (rm.N != 99) { pc++; };
             if (rm.S != 99) { pc++; };
@@ -615,30 +616,35 @@ namespace AdventureServer
             if (rm.U != 99) { pc++; };
             if (rm.D != 99) { pc++; };
 
-            // A room could have no exit. You can "teleport" in a room with not exits 
+            // A room could have no exit. You can "teleport" in a room with no exits so return and empty string
             if (pc == 0) { return ""; }
 
-            // construct the list of directions you can follow from a room 
+            // Figure out which position in the sentance we want to add the "and". This is the total positions minus one 
             if (pc > 1) { ac = pc - 1; }
 
+            // If we can move North then add "north" to the string
             if (rm.N != 99) { cs++; _result += "north"; }
-            if (ac == cs) { ac = 99; _result += " and "; }
+
+            // if "and" coutner is equal to the comma seperator couter then add the comma which is 1 less than the number of item in the list
+            if (ac == cs) { ac = 99; _result += ", and "; }
+
+            // otherwise if we have more than 1 item remaining in our list add a comma 
             if ((ac != 99) && (pc > 2) && (cs > 0)) { _result += ", "; }
 
             if (rm.S != 99) { cs++; _result += "south"; }
-            if (ac == cs) { ac = 99; _result += " and "; }
+            if (ac == cs) { ac = 99; _result += ", and "; }
             if ((ac != 99) && (pc > 2) && (cs > 0)) { _result += ", "; }
 
             if (rm.E != 99) { cs++; _result += "east"; }
-            if (ac == cs) { ac = 99; _result += " and "; }
+            if (ac == cs) { ac = 99; _result += ", and "; }
             if ((ac != 99) && (pc > 2) && (cs > 0)) { _result += ", "; }
 
             if (rm.W != 99) { cs++; _result += "west"; }
-            if (ac == cs) { ac = 99; _result += " and "; }
+            if (ac == cs) { ac = 99; _result += ", and "; }
             if ((ac != 99) && (pc > 2) && (cs > 0)) { _result += ", "; }
 
             if (rm.U != 99) { cs++; _result += "up"; }
-            if (ac == cs) { ac = 99; _result += " and "; }
+            if (ac == cs) { ac = 99; _result += ", and "; }
             if ((ac != 99) && (pc > 2) && (cs > 0)) { _result += ", "; }
 
             if (rm.D != 99) { _result += "down"; }
@@ -738,7 +744,7 @@ namespace AdventureServer
 
         #region Game Actions to Activities
 
-        private Tuple<PlayAdventure, CommandState> Action_MovePlayer(PlayAdventure p, CommandState cs)
+        private static Tuple<PlayAdventure, CommandState> Action_MovePlayer(PlayAdventure p, CommandState cs)
         {
             // The command will have been parsed and we will expect the direction to be in command modifier
             var room = Object_GetRoom(p.Rooms, p.Player.Room);
@@ -800,7 +806,11 @@ namespace AdventureServer
             if (cs.Command == "eat") { (p, cs) = Action_UseItem(p, cs); }
             if (cs.Command == "use") { (p, cs) = Action_UseItem(p, cs); }
             if (cs.Command == "wave") { (p, cs) = Action_UseItem(p, cs); }
-            if (cs.Command == "throw") { (p, cs) = Action_UseItem(p, cs); }
+            if (cs.Command == "throw") 
+                {
+              
+                    (p, cs) = Action_UseItem(p, cs); 
+                }
 
             // control command 
             if (cs.Command == "health") { cs.Message = "You feel " + GetHealthReport(p.Player.HealthCurrent, p.Player.HealthMax) + "."; }
@@ -817,7 +827,7 @@ namespace AdventureServer
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private Tuple<PlayAdventure, CommandState> Action_ItemManagemet(PlayAdventure p, CommandState cs)
+        private static Tuple<PlayAdventure, CommandState> Action_ItemManagemet(PlayAdventure p, CommandState cs)
         {
             var requesteditem = cs.Modifier.ToLower();
 
@@ -1054,11 +1064,14 @@ namespace AdventureServer
 
                     if (item.ActionResult.ToLower() == "teleport")
                     {
+                        p.Items = Object_MoveItem(p.Items, cs.Modifier, p.Player.Room);
+
                         p.Player.Room = Convert.ToInt32(item.ActionValue);
                         p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p);
                         cs.Message = "A magicial set of fingers has dropped you in this room..";
 
                         p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
+
                     }
 
                 }

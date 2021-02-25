@@ -1,9 +1,9 @@
-using NUnit.Framework;
 using AdventureServer;
 using AdventureServer.Controllers;
 using AdventureServer.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using NUnit.Framework;
 
 namespace AdventureServer_Test
 {
@@ -14,13 +14,14 @@ namespace AdventureServer_Test
         private AdventureFramework _adventureFramework;
         private AdventureController _adventureController;
         private PlayAdventureController _playAdventureController;
-        private MemoryCacheOptions mco = new MemoryCacheOptions();
+        private readonly MemoryCacheOptions mco = new MemoryCacheOptions();
         private IMemoryCache _gameCache;
 
 
         [SetUp]
         public void Setup()
         {
+            
             _gameCache = new MemoryCache(mco);
             _welcomeSontroller = new WelcomeController();
             _adventureFramework = new AdventureFramework(_gameCache);
@@ -30,16 +31,25 @@ namespace AdventureServer_Test
         }
 
         [Test]
-        public void SmokeTest()
+        public void WelcomeControllerTest()
         {
             var OkResult = _welcomeSontroller.Index();
             Assert.IsNotNull(OkResult);
         }
 
+        //[Test]
+        //public void PlayAdventureControllerWelcomeTest()
+        //{
+        //    TODO: Figure out how to call http endpoint - need to manage the session variable and httpcontext 
+        //  
+        //    var OkResult = _playAdventureController.Welcome();
+        //    Assert.IsNotNull(OkResult);
+        //}
+
+
         [Test]
         public void TestCreateNewGame()
         {
-           
             var getadv = _adventureFramework.ControllerEntry_NewGame(1);
             Assert.IsTrue(getadv.InstanceID.Length > 10);
 
@@ -48,30 +58,44 @@ namespace AdventureServer_Test
         [Test]
         public void TestItemMovemementAndCache()
         {
-            var adv = new PlayAdventure();
+            // Start Game
             var newadv = _adventureFramework.ControllerEntry_NewGame(1);
-            adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
-            adv.Items = _adventureFramework.Object_MoveItem(adv.Items, "bugle", 9999);
+            PlayAdventure adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            // Get Item
+            var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "get bugle" });
+            // Save the Game State
             _adventureFramework.GameInstance_Update(adv);
+            // Load Game from Cache
             adv = _adventureFramework.GameInstance_GetObject(adv.InstanceID);
+            // Check to see if the item is in the player inventory 
             var itemloc = adv.Items.Find(i => i.Name.ToLower() == "bugle").Location;
             Assert.IsTrue(itemloc == 9999);
+
+        }
+
+        [Test]
+        public void PlayTestFirstRoom()
+        {
+            // Enter the Game a pick up the first item
+            var newadv = _adventureFramework.ControllerEntry_NewGame(1);
+            PlayAdventure adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "get bugle" });
+            Assert.IsTrue(!gameMoveResult.ItemsMessage.Contains("BUGLE"));
 
 
         }
 
         [Test]
-        public void PlayAdventureTest()
+        public void PlayTestFirstRoomPetKitten()
         {
-            var adv = new PlayAdventure();
+            // Enter the Game, Pet the Kitten and then see if the Kitten follows the player 
             var newadv = _adventureFramework.ControllerEntry_NewGame(1);
-            adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
-            var test = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "get bugle" });
-            Assert.IsTrue(true);
+            PlayAdventure adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            _ = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "pet kitten" });
+            var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "d" });
+            Assert.IsTrue(gameMoveResult.RoomMessage.Contains("KITTEN"));
 
         }
-
-
 
     }
 }
