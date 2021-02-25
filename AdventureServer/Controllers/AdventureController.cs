@@ -21,7 +21,7 @@ namespace AdventureServer.Controllers
         public List<Game> GameList() => _playAdventure.ControllerEntry_GetGames();
 
         // Play First Game 
-        [HttpGet("/api/Adventure/list")] 
+        [HttpGet("/api/Adventure")] 
         public GameMoveResult NewGame() => _playAdventure.ControllerEntry_NewGame(1);
 
         // Play Game based on the list of games 
