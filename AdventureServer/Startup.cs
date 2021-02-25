@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore;
 
 namespace AdventureServer
 {
@@ -31,7 +33,12 @@ namespace AdventureServer
                 .AddControllersAsServices(); // this adds the controllers as services to all for DI to resolve them 
 
             services.AddSession();
-            services.AddSwaggerDocument();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Adventure Server", Version = "v1" });
+            });
+
 
             // adventure sever framework
             services.AddSingleton<IPlayAdventure, AdventureFramework>();
@@ -49,12 +56,16 @@ namespace AdventureServer
 
             app.UseHttpsRedirection();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Adventure Server API v1"));
+
             // app.UseRouting();
             // app.UseAuthorization();
-            
+
             app.UseStaticFiles();
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
+       
+            
+           
 
 
             app.UseSession();
