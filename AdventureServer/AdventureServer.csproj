@@ -20,6 +20,9 @@ Adventure House Game is based on a Microsoft PowerShell demo project but has bee
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\css\adventure.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\img\AdventureHouse1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
