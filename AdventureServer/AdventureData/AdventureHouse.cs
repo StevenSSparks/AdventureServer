@@ -190,6 +190,7 @@ namespace AdventureServer.AdventureData
                 new Message {MessageTag ="Any", Messsage="That seems like a bad idea. I can't let you do that" },
                 new Message {MessageTag ="Any", Messsage="That did not work as expected." },
                 new Message {MessageTag ="Any", Messsage="Nope." },
+                new Message {MessageTag ="Any", Messsage="My Mom said I'm not allowed play that move." },
                 new Message {MessageTag ="Any", Messsage="Try Again! Just kidding. That likely won't work!" },
                 new Message {MessageTag ="Dead", Messsage = "You Died. I'd play Taps but the bugle makes me feel sick R.I.P." },
                 new Message {MessageTag ="Dead", Messsage = "You Died. Did that hurt? R.I.P." },
