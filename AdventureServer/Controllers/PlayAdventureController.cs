@@ -24,6 +24,7 @@ namespace AdventureServer.Controllers
 
         [Route("/playadventure")]
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Welcome()
         {
             HttpContext.Session.SetString("InstanceID", "-1");
@@ -40,6 +41,7 @@ namespace AdventureServer.Controllers
         // like the screen is scrolling up.
         [Route("/PlayAdventure")]
         [HttpPost]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult PlayGame(string command, string buffer)
         {
             var _playgame = new PlayGameVM();
