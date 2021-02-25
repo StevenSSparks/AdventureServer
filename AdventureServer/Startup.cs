@@ -56,7 +56,11 @@ namespace AdventureServer
             app.UseHttpsRedirection();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Adventure Server API v1"));
+            app.UseSwaggerUI(c => {
+
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "Adventure Server API v1");
+
+                });
 
             // app.UseRouting();
             // app.UseAuthorization();
