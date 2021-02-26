@@ -445,15 +445,21 @@ namespace AdventureServer.Services.AdventureFramework
             return (cmd.Trim()) switch
             {
                 "pick" => "get",
+                "take" => "get",
+                "pickup" => "get",
                 "run" => "go",
+                "move" => "go",
+                "climb" => "go",
                 "put" => "drop",
                 "bite" => "use",
                 "taste" => "use",
                 "unlock" => "use",
                 "lock" => "use",
                 "examine" => "look",
-                "Inventory" => "inv",
+                "inventory" => "inv",
+                "pack" => "inv",
                 "scare" => "shoo",
+                "kick" => "shoo",
                 "kiss" => "pet",
                 "hug" => "pet",
                 "restart" => "quit",
@@ -942,7 +948,7 @@ namespace AdventureServer.Services.AdventureFramework
             {
                 var _result = GetRoomInventory(9999, p.Items);
 
-                cs.Message = "Invetory :";
+                cs.Message = "You pack contains :";
                 if (_result == "") _result = " [Empty]";
                 cs.Message += _result + "\r\n";
                 cs.Valid = true;

@@ -11,7 +11,7 @@ namespace AdventureServer.AdventureData
     {
         public string GetAdventureHelpText()
         {
-            return "You pause and recall a bedtime story your mother use to tell you: \r\n"
+            return "You pause and recall a bedtime story your mother use to tell you: \r\n\r\n"
                    + "Once upon a time a great explorer wondered into a mystery house. "
                    + "The adventurer visited rooms from the EAST to the WEST. "
                    + "Going UP and DOWN stairs and ladders looking for items. The hero "
@@ -162,7 +162,7 @@ namespace AdventureServer.AdventureData
                 new Message {MessageTag ="PetSuccess", Messsage="The little @ seems to like you and had become your friend."},
                 new Message {MessageTag ="ShooSuccess", Messsage="The cute @ looks disappointed and sits then runs away."},
                 new Message {MessageTag ="ShooSuccess", Messsage="The little @ is looks sad and goes to back to its safe plce."},
-                new Message {MessageTag ="GetSuccess", Messsage="The @ seems fit snugly in your pack."},
+                new Message {MessageTag ="GetSuccess", Messsage="The @ seems to fit snugly in your pack."},
                 new Message {MessageTag ="GetSuccess", Messsage="You store the @ in your inventory."},
                 new Message {MessageTag ="DropFailed", Messsage="The @ is not in your inventory."},
                 new Message {MessageTag ="DropSuccess", Messsage="You place the @ on the floor."},
