@@ -6,9 +6,9 @@ using AdventureServer.Models;
 using AdventureServer.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace AdventureServer
+namespace AdventureServer.Services.AdventureFramework
 {
-    public class AdventureFramework : IPlayAdventure
+    public class AdventureFrameworkService : IPlayAdventure
     {
         // Game 1 
         private readonly AdventureData.AdventureHouse adventureHouse = new AdventureData.AdventureHouse();
@@ -16,7 +16,7 @@ namespace AdventureServer
         // storage for the adventures
         private readonly IMemoryCache _gameCache;
 
-        public AdventureFramework(IMemoryCache GameCache)
+        public AdventureFrameworkService(IMemoryCache GameCache)
         {
             _gameCache = GameCache;
         }

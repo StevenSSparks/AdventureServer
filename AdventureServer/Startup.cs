@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AdventureServer.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using AdventureServer.Services.AdventureFramework;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -41,19 +42,17 @@ namespace AdventureServer
 
 
             // adventure sever framework
-            services.AddSingleton<IPlayAdventure, AdventureFramework>();
+            services.AddSingleton<IPlayAdventure, AdventureFrameworkService>();
             
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
   
-            app.UseDeveloperExceptionPage();
-            
-
-            app.UseHttpsRedirection();
+            app.UseDeveloperExceptionPage(); // Since this is learning experince - expose this page
+            app.UseHttpsRedirection(); // Encourage HTTPS
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
@@ -62,17 +61,12 @@ namespace AdventureServer
 
                 });
 
-            // app.UseRouting();
+            // app.UseRouting(); // Future
             // app.UseAuthorization();
 
             app.UseStaticFiles();
             app.UseSession();
             app.UseMvc();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
         }
     }
 }

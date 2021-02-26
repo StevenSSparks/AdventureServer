@@ -4,30 +4,30 @@
 
 <body>
     <script type="text/javascript">
-            window.onload = function () {
-                document.getElementsByName('buffer')[0].scrollTop = document.getElementsByName('buffer')[0].scrollHeight;
+        window.onload = function () {
+            document.getElementsByName('buffer')[0].scrollTop = document.getElementsByName('buffer')[0].scrollHeight;
 
-                var textbox = document.getElementById("command");
-                textbox.focus();
-                textbox.scrollIntoView();
-            };
+            var textbox = document.getElementById("command");
+            textbox.focus();
+            textbox.scrollIntoView();
+        };
     </script>
-<p><strong>@Model.RoomName</strong></p>
-<br />
-<form name="commandprocessor" action="/playadventure" method="Post">
+    <p><strong>@Model.RoomName</strong></p>
+    <br />
+    <form name="commandprocessor" action="/playadventure/@Model.GameID" method="Post">
 <textarea readonly name="buffer">
 @Model.Buffer &#13;&#10
 @Model.Message  &#13;&#10
 @Model.Items
 </textarea><br />
-&gt;<input name="command" type="text" autofocus autocomplete="on" />
-</form>
+        &gt;<input name="command" type="text" autofocus autocomplete="on" />
+    </form>
 
     @*<br />
-    <p>
-        <h8>@Model.GamerTag, You are feeling @Model.HealthReport</h8>
-    </p>
-    <br />*@
+        <p>
+            <h8>@Model.GamerTag, You are feeling @Model.HealthReport</h8>
+        </p>
+        <br />*@
 
 </body>
 

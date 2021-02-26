@@ -21,15 +21,15 @@ namespace AdventureServer.Controllers
         }
 
 
-        [Route("/playadventure")]
+        [Route("/playadventurehouse")]
         [HttpGet]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult Welcome()
+        public IActionResult PlayAdventureHouse()
         {
             HttpContext.Session.SetString("InstanceID", "-1");
             ViewBag.Message = "";
 
-            return View("index");
+            return View("index");  // fix folder and view structure 
 
         }
 
@@ -38,12 +38,14 @@ namespace AdventureServer.Controllers
         // TODO: Change this endpoint to Adventure House and let people pick the game before we get here
         // The command is posted as well as the display buffer so that each time you do a command it looks
         // like the screen is scrolling up.
-        [Route("/PlayAdventure")]
+        [Route("/PlayAdventure/{id}")]
         [HttpPost]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult PlayGame(string command, string buffer)
+        public IActionResult PlayGame(int id, string command, string buffer)
         {
             var _playgame = new PlayGameVM();
+
+            _playgame.GameID = id.ToString().Trim(); 
 
             //Check to see if the player has an active game
             string _InstanceID = HttpContext.Session.GetString("InstanceID");
@@ -51,7 +53,7 @@ namespace AdventureServer.Controllers
             if (_InstanceID == "-1") // If no active game then crete a new game
             {
 
-                var gameMove = _adventureController.NewGame();
+                var gameMove = _adventureController.NewGameByID(id);
                 HttpContext.Session.SetString("InstanceID", gameMove.InstanceID.ToString());
                 _playgame.Buffer = "";
                 _playgame.RoomName = gameMove.RoomName;

@@ -7,6 +7,7 @@ namespace AdventureServer.Models
 {
     public class PlayGameVM
     {
+        public string GameID { get; set; }
         public string GamerTag { get; set; }
         public string RoomName { get; set; }
         public string Buffer { get; set; }
