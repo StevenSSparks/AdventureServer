@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore;
+using AdventureServer.Services;
 
 namespace AdventureServer
 {
@@ -43,6 +44,7 @@ namespace AdventureServer
 
             // adventure sever framework
             services.AddSingleton<IPlayAdventure, AdventureFrameworkService>();
+            services.AddTransient<IAppVersionService, AppVersionService>();
             
 
         }

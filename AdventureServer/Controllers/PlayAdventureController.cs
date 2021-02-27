@@ -43,9 +43,10 @@ namespace AdventureServer.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult PlayGame(int id, string command, string buffer)
         {
-            var _playgame = new PlayGameVM();
-
-            _playgame.GameID = id.ToString().Trim(); 
+            var _playgame = new PlayGameVM
+            {
+                GameID = id.ToString().Trim()
+            };
 
             //Check to see if the player has an active game
             string _InstanceID = HttpContext.Session.GetString("InstanceID");

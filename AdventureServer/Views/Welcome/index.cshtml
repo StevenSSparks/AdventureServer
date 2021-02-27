@@ -1,9 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@model AdventureServer.Models.WelcomeVM;
+
+<!DOCTYPE html>
 <html>
 <body>
-    <p>
-    <img src="~/img/adventuresserver3.jpg" /><br />
-    <h5>Developed by: <i>Steve Sparks</i></h5>
+    <div>
+        <p>
+            <img src="~/img/adventuresserver3.jpg" /><br />
+            Version: @Model.AppVersion <br /><br />
+            Developed by: <strong>Steve Sparks</strong> <br />
+            See  <a href="https://github.com/StevenSSparks/AdventureServer/releases" Target="_blank">GitHub</a> for more deails. <br />
+
+        </p>
+    </div>
     <p>
         Adventure Server is a learning project that I use to establish patterns and concepts of <br />
         various development and hosting ideas. This project combines a love for text adventures <br />

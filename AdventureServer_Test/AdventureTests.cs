@@ -10,7 +10,7 @@ namespace AdventureServer_Test
 {
     public class AdventureTests
     {
-
+      
         private WelcomeController _welcomeSontroller;
         private AdventureFrameworkService _adventureFramework;
         private AdventureController _adventureController;
@@ -24,7 +24,7 @@ namespace AdventureServer_Test
         {
             
             _gameCache = new MemoryCache(mco);
-            _welcomeSontroller = new WelcomeController();
+            _welcomeSontroller = new WelcomeController(new AdventureServer.Services.AppVersionService());
             _adventureFramework = new AdventureFrameworkService(_gameCache);
             _adventureController = new AdventureController(_adventureFramework);
            // _playAdventureController = new PlayAdventureController(_adventureController);
