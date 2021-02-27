@@ -447,6 +447,7 @@ namespace AdventureServer.Services.AdventureFramework
                 "pick" => "get",
                 "take" => "get",
                 "pickup" => "get",
+                "grab" => "get",
                 "run" => "go",
                 "move" => "go",
                 "climb" => "go",
