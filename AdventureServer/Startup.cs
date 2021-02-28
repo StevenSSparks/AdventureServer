@@ -31,7 +31,7 @@ namespace AdventureServer
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddCors(o => o.AddPolicy("DefaultPolicy", builder =>
+            services.AddCors(o => o.AddPolicy("CORSPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -66,7 +66,7 @@ namespace AdventureServer
             app.UseDeveloperExceptionPage(); // Since this is learning experince - expose this page
             app.UseHttpsRedirection(); // Encourage HTTPS
             
-            app.UseCors("DefaultPolicy");
+            app.UseCors("CORSPolicy");
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
