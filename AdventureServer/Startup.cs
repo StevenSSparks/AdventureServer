@@ -30,7 +30,15 @@ namespace AdventureServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-          
+
+            services.AddCors(o => o.AddPolicy("DefaultPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .AllowCredentials();
+            }));
+
             services.AddMvc(options => options.EnableEndpointRouting = false)
                 .AddControllersAsServices(); // this adds the controllers as services to all for DI to resolve them 
 
@@ -40,6 +48,8 @@ namespace AdventureServer
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Adventure Server", Version = "v1" });
             });
+
+            
 
 
             // adventure sever framework
@@ -55,6 +65,8 @@ namespace AdventureServer
   
             app.UseDeveloperExceptionPage(); // Since this is learning experince - expose this page
             app.UseHttpsRedirection(); // Encourage HTTPS
+            
+            app.UseCors("DefaultPolicy");
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
