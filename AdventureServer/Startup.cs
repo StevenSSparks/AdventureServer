@@ -35,8 +35,8 @@ namespace AdventureServer
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials();
+                       .AllowAnyHeader();
+                      
             }));
 
             services.AddMvc(options => options.EnableEndpointRouting = false)
