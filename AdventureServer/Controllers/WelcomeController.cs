@@ -21,7 +21,7 @@ namespace AdventureServer.Controllers
             _appVersionService = appVersionService;
         }
 
-        [EnableCors("DefaulPolicy")]
+        [EnableCors("CORSPolicy")]
         [Route("/")]
         [HttpGet]
         [ApiExplorerSettings(IgnoreApi = true)]
