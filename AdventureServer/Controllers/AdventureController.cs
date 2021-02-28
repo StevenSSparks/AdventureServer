@@ -22,20 +22,20 @@ namespace AdventureServer.Controllers
         }
 
         // List of Games in the Game Data Store
-        [EnableCors("DefaulPolicy")]
+        [EnableCors("CORSPolicy")]
         [Route("/api/Adventure/list")]
         [HttpGet]
         public List<Game> GameList() => _playAdventure.ControllerEntry_GetGames();
 
 
         // Play Game based on the list of games 
-        [EnableCors("DefaulPolicy")]
+        [EnableCors("CORSPolicy")]
         [Route("/api/Adventure/{id}")]
         [HttpGet] // returns the game requested
         public GameMoveResult NewGameByID([FromRoute] int id) => _playAdventure.ControllerEntry_NewGame(id);
 
         // Make a Game Move 
-        [EnableCors("DefaulPolicy")]
+        [EnableCors("CORSPolicy")]
         [Route("/api/Adventure")]
         [HttpPost]
         public GameMoveResult GameMove(GameMove gm) => _playAdventure.ControllerEntry_GameMove(gm);
