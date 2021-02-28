@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using AdventureServer.Services;
 using AdventureServer.Models;
 using AdventureServer.Interfaces;
+using Microsoft.AspNetCore.Cors;
 
 namespace AdventureServer.Controllers
 {
@@ -20,6 +21,7 @@ namespace AdventureServer.Controllers
             _appVersionService = appVersionService;
         }
 
+        [EnableCors("DefaulPolicy")]
         [Route("/")]
         [HttpGet]
         [ApiExplorerSettings(IgnoreApi = true)]
