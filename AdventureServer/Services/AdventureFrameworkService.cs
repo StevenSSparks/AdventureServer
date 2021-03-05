@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdventureServer.Models;
+using AdventureServer.Models.AdventureGame;
 using AdventureServer.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using AdventureServer.Models;
+using AdventureServer.Models.AdventureGame;
 using AdventureServer.Interfaces;
 using Microsoft.AspNetCore.Cors;
 
 namespace AdventureServer.Controllers
 {
-   
+
     [ApiExplorerSettings(IgnoreApi = false)]
     public class AdventureController : Controller
     {
@@ -39,6 +36,6 @@ namespace AdventureServer.Controllers
         [Route("/api/Adventure")]
         [HttpPost]
         public GameMoveResult GameMove(GameMove gm) => _playAdventure.ControllerEntry_GameMove(gm);
-   
+  
     }
 }

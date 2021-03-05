@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdventureServer.Models
+namespace AdventureServer.Models.AdventureGame
 {
     public class Player
     {
