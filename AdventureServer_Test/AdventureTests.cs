@@ -85,8 +85,6 @@ namespace AdventureServer_Test
             PlayAdventure adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
             var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "get bugle" });
             Assert.IsTrue(!gameMoveResult.ItemsMessage.Contains("BUGLE"));
-
-
         }
 
         [Test]
@@ -98,7 +96,6 @@ namespace AdventureServer_Test
             _ = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "pet kitten" });
             var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "d" });
             Assert.IsTrue(gameMoveResult.RoomMessage.Contains("KITTEN"));
-
         }
 
         [Test]
