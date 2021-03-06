@@ -5,51 +5,44 @@ using System.Threading.Tasks;
 using AdventureServer.Models.AdventureGame;
 using AdventureServer.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using AdventureServer.GameData;
 
-namespace AdventureServer.Services.AdventureFramework
+
+namespace AdventureServer.Services.TextAdventureGameService
 {
-    public class AdventureFrameworkService : IPlayAdventure
+    public class TextAdventureGameService : IPlayTextAdventure
     {
-        // Game 1 
-        private readonly AdventureData.AdventureHouse adventureHouse = new AdventureData.AdventureHouse();
+     
+        // Game Caching Service
+        public IGameCache _gameCache;
 
-        // storage for the adventures
-        private readonly IMemoryCache _gameCache;
-
-        public AdventureFrameworkService(IMemoryCache GameCache)
+        public TextAdventureGameService(IGameCache gameCache)
         {
-            _gameCache = GameCache;
+            _gameCache = gameCache;
         }
 
         #region Game Cache Management
 
         private void Cache_AddPlayAdventure(PlayAdventure p)
         {
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-              // Keep in cache for this time, reset time if accessed.
-              .SetSlidingExpiration(TimeSpan.FromMinutes(8 * 60)); //  8 hours
-
-            _ = _gameCache.Set(p.InstanceID, p, cacheEntryOptions);
-
+             _gameCache.CacheAdd(p.InstanceID, p, 8 * 60);
         }
 
         private void Cache_ReplacePlayAdventure(PlayAdventure p)
         {
-            _gameCache.Remove(p.InstanceID);
-            Cache_AddPlayAdventure(p);
+            _gameCache.CacheRemove(p.InstanceID);
+            Cache_AddPlayAdventure(p); ;
         }
 
         private PlayAdventure Cache_GetPlayAdventure(string key)
         {
-            var cacheEntry = _gameCache.Get<PlayAdventure>(key);
-
+            var cacheEntry = (PlayAdventure)_gameCache.CacheGet(key);
             return cacheEntry;
         }
 
         private void Cache_RemovePlayAdventure(string key)
         {
-            _gameCache.Remove(key);
+            _gameCache.CacheRemove(key);
 
         }
 
@@ -57,22 +50,40 @@ namespace AdventureServer.Services.AdventureFramework
 
         #region Instance Management 
 
-        private string GameInstance_New(int gamechoice)
+        private static PlayAdventure NewGame(int gamechoice)
         {
-            var tempId = Guid.NewGuid().ToString();
+            var cacheKey = Guid.NewGuid().ToString();
+            var p = new PlayAdventure();
+
+            // ToDo: Make this data driven based on games list. 
             if (gamechoice == 1)
             {
-                var p = adventureHouse.SetupAdventure(tempId);
-                Cache_AddPlayAdventure(p);
+                p = new AdventureHouse().SetupAdventure(cacheKey);
+                return p;
             }
 
-            return tempId;
+            if (gamechoice == 2)
+            {
+                p = new AdventureHouse().SetupAdventure(cacheKey);
+                return p;
+            }
+
+
+            // Default Game is Game 1
+            p = new AdventureHouse().SetupAdventure(cacheKey);
+            return p;
+        }
+
+        private string GameInstance_New(int gamechoice)
+        {
+            var p = NewGame(gamechoice);
+            Cache_AddPlayAdventure(p);
+            return p.InstanceID;
         }
 
         public Boolean GameInstance_Exists(string id)
         {
             var adventure = Cache_GetPlayAdventure(id);
-
             if (adventure.InstanceID == null) return false;
             return true;
         }
@@ -826,7 +837,10 @@ namespace AdventureServer.Services.AdventureFramework
             if (cs.Command == "help") { cs.Message = p.GameHelp; }
             if (cs.Command == "newgame") 
             {
-                p = adventureHouse.SetupAdventure(p.InstanceID);
+                Cache_RemovePlayAdventure(p.InstanceID);
+                p = NewGame(p.GameID);
+                Cache_AddPlayAdventure(p);
+               
                 cs.Message = "Game has been reset. Enjoy!";
 
             }

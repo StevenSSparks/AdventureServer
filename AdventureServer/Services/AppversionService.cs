@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace AdventureServer.Services
+namespace AdventureServer.Services.AppVersionService
 {
     public class AppVersionService : IAppVersionService
     {

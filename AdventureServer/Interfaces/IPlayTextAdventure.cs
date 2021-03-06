@@ -6,7 +6,7 @@ using AdventureServer.Models.AdventureGame;
 
 namespace AdventureServer.Interfaces
 {
-    public interface IPlayAdventure 
+    public interface IPlayTextAdventure 
     {
         public GameMoveResult ControllerEntry_NewGame(int GameID);
 

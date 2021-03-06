@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AdventureServer.Models.AdventureGame;
-using AdventureServer.AdventureData;
+using AdventureServer.Models;
+using AdventureServer.GameData;
 
 
 namespace AdventureServer.Controllers

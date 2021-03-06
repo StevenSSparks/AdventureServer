@@ -1,31 +1,34 @@
 using AdventureServer;
 using AdventureServer.Controllers;
-using AdventureServer.Models;
-using AdventureServer.Services.AdventureFramework;
+using AdventureServer.Interfaces;
+using AdventureServer.Models.AdventureGame;
+using AdventureServer.Services.TextAdventureGameService;
+using AdventureServer.Services.GameCacheService;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using NUnit.Framework;
+using AdventureServer.Services.AppVersionService;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AdventureServer_Test
 {
     public class AdventureTests
     {
-      
+
+        private readonly MemoryCacheOptions mco = new MemoryCacheOptions();
+        private IMemoryCache _memoryCache;
+        private IGameCache _gameCache;
         private WelcomeController _welcomeSontroller;
-        private AdventureFrameworkService _adventureFramework;
+        private TextAdventureGameService _adventureFramework;
         private AdventureController _adventureController;
         // private PlayAdventureController _playAdventureController;
-        private readonly MemoryCacheOptions mco = new MemoryCacheOptions();
-        private IMemoryCache _gameCache;
-
 
         [SetUp]
         public void Setup()
         {
-            
-            _gameCache = new MemoryCache(mco);
-            _welcomeSontroller = new WelcomeController(new AdventureServer.Services.AppVersionService());
-            _adventureFramework = new AdventureFrameworkService(_gameCache);
+            _memoryCache = new MemoryCache(mco);
+            _gameCache = new GameCacheService(_memoryCache);
+            _welcomeSontroller = new WelcomeController(new AppVersionService());
+            _adventureFramework = new TextAdventureGameService(_gameCache);
             _adventureController = new AdventureController(_adventureFramework);
            // _playAdventureController = new PlayAdventureController(_adventureController);
 
@@ -97,6 +100,19 @@ namespace AdventureServer_Test
             Assert.IsTrue(gameMoveResult.RoomMessage.Contains("KITTEN"));
 
         }
+
+        [Test]
+        public void PlayTestNewGame()
+        {
+            // Enter the Game and reset it inside the game interface
+            string gameInstance;
+            var newadv = _adventureFramework.ControllerEntry_NewGame(1);
+            gameInstance = newadv.InstanceID;
+            PlayAdventure adv = _adventureFramework.GameInstance_GetObject(newadv.InstanceID);
+            var gameMoveResult = _adventureController.GameMove(new GameMove { InstanceID = adv.InstanceID, Move = "newgame" });
+            Assert.IsTrue(gameMoveResult.InstanceID != gameInstance);
+        }
+
 
     }
 }

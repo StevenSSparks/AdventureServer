@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace AdventureServer.AdventureData
+namespace AdventureServer.GameData
 {
     public class GamerTags
     {

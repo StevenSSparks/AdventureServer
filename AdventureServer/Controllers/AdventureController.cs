@@ -10,10 +10,10 @@ namespace AdventureServer.Controllers
     [ApiExplorerSettings(IgnoreApi = false)]
     public class AdventureController : Controller
     {
-        private readonly IPlayAdventure _playAdventure;
+        private readonly IPlayTextAdventure _playAdventure;
 
 
-        public AdventureController(IPlayAdventure playAdventure)
+        public AdventureController(IPlayTextAdventure playAdventure)
         {
             _playAdventure = playAdventure;
         }

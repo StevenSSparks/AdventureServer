@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdventureServer.Models;
-using AdventureServer.AdventureData;
+using AdventureServer.Models.AdventureGame;
+using AdventureServer.GameData;
 
-namespace AdventureServer.AdventureData
+namespace AdventureServer.GameData
 {
     public class AdventureHouse
     {
