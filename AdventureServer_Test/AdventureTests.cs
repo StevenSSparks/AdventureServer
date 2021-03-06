@@ -13,7 +13,6 @@ namespace AdventureServer_Test
 {
     public class AdventureTests
     {
-
         private readonly MemoryCacheOptions mco = new MemoryCacheOptions();
         private IMemoryCache _memoryCache;
         private IGameCache _gameCache;
@@ -31,7 +30,6 @@ namespace AdventureServer_Test
             _adventureFramework = new TextAdventureGameService(_gameCache);
             _adventureController = new AdventureController(_adventureFramework);
            // _playAdventureController = new PlayAdventureController(_adventureController);
-
         }
 
         [Test]
@@ -40,16 +38,6 @@ namespace AdventureServer_Test
             var OkResult = _welcomeSontroller.Index();
             Assert.IsNotNull(OkResult);
         }
-
-        //[Test]
-        //public void PlayAdventureControllerWelcomeTest()
-        //{
-        //    TODO: Figure out how to call http endpoint - need to manage the session variable and httpcontext 
-        //  
-        //    var OkResult = _playAdventureController.Welcome();
-        //    Assert.IsNotNull(OkResult);
-        //}
-
 
         [Test]
         public void TestCreateNewGame()
