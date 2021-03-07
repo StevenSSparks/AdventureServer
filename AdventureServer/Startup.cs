@@ -1,22 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AdventureServer.Interfaces;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using AdventureServer.Services.GameCacheService;
 using AdventureServer.Services.TextAdventureGameService;
+using AdventureServer.Services.TicTacToeGameService;
 using AdventureServer.Services.AppVersionService;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore;
-
 
 namespace AdventureServer
 {
@@ -51,14 +44,11 @@ namespace AdventureServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Adventure Server", Version = "v1" });
             });
 
-
-
-
             // adventure sever framework
             services.AddSingleton<IGameCache, GameCacheService>();
             services.AddSingleton<IPlayTextAdventure, TextAdventureGameService>();
+            services.AddSingleton<IPlayTicTacToe, TickTacToeGameService>();
             services.AddTransient<IAppVersionService, AppVersionService>();
-            
 
         }
 

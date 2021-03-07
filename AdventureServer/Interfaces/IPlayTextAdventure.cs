@@ -12,7 +12,7 @@ namespace AdventureServer.Interfaces
 
         public List<Game> ControllerEntry_GetGames();
 
-        GameMoveResult ControllerEntry_GameMove(GameMove gameMove);
+        public GameMoveResult ControllerEntry_GameMove(GameMove gameMove);
 
     }
 }

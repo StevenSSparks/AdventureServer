@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AdventureServer.Models.TicTacToeGame
 {
-    public class GameMove
+    public class TicTacToeGameMove
     {
        public string InstanceID { get; set; }
        public string Move { get; set; }

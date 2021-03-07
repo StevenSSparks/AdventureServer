@@ -16,4 +16,5 @@ namespace AdventureServer.Models.TicTacToeGame
         public bool GameOver { get; set; }
 
     }
+
 }
