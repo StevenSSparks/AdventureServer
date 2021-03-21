@@ -5,15 +5,18 @@ using System.Threading.Tasks;
 
 namespace AdventureServer.Models.TicTacToeGame
 {
+
     public class TicTacToeGame
     {
         public string XPlayerName { get; set; }
         public bool XPlayerComputer { get; set; }
         public string OPlayerName { get; set; }
         public bool OPlayerComputer { get; set; }
-        public List<string> GameBoard { get; set; }
+        public List<int> GameBoardList { get; set; }
         public string GameWinner { get; set; }
+        public string Message { get; set; }
         public bool GameOver { get; set; }
+        public string[,] GameBoardArray { get; set; }
 
     }
 

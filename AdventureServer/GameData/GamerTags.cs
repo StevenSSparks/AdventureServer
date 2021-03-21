@@ -51,7 +51,37 @@ namespace AdventureServer.GameData
                 "Andy Capp",
                 "Top Hatter",
                 "Bat Master",
-                "Red Winter"
+                "Red Winter",
+                "Mario Man",
+                "Hot Potato",
+                "Fed Up Gamer",
+                "Faster Player",
+                "Timeless Warrior",
+                "Player 2.0",
+                "Striper Man",
+                "Node Killer",
+                "Novice Player",
+                "Avatar",
+                "Avatar Fan",
+                "Blue Player",
+                "Rogue One",
+                "Solo One",
+                "Han Fan",
+                "Tea Man 2",
+                "Cookie Monster",
+                "Hunter Killer",
+                "Clark W",
+                "Hank Hill",
+                "Rusty S",
+                "The Billdozer",
+                "Bobby",
+                "Peggy Fan",
+                "Don Laundry Rulez!",
+                "Hookem Fan",
+                "Laundry Dozer",
+                "Pizza Eater",
+                "Chicken Wing"
+
             };
 
   

@@ -9,6 +9,25 @@ namespace AdventureServer.GameData
     {
 
         public string EmptyGameBoardString => EmptyGameBoard();
+        public List<string> EmptyGameBoardList => EmptyGameBoardListGen();
+        public List<int> RecommendedFirstMoves => FirstMovesList();
+        public List<int> BoardValuesList => EmptytMovesList();
+
+        private List<string> EmptyGameBoardListGen()
+        {
+            return new List<string>(new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8,"} );
+        }
+
+        private static List<int> FirstMovesList()
+        {
+            return new List<int>(new int[] { 0,2,4,6,8 });
+        }
+
+        private static List<int> EmptytMovesList()
+        {
+            return new List<int>(new int[] {0,0,0,0,0,0,0,0});
+        }
+
 
 
         private string EmptyGameBoard()
@@ -16,15 +35,15 @@ namespace AdventureServer.GameData
             string b = "";
 
             b += "         |         |         " + "\r\n";
-            b += "    1    |    2    |    3    " + "\r\n";
+            b += "    0    |    1    |    2    " + "\r\n";
             b += "         |         |         " + "\r\n";
             b += "---------+---------+---------" + "\r\n";
             b += "         |         |         " + "\r\n";
-            b += "    4    |    5    |    6    " + "\r\n";
+            b += "    3    |    4    |    5    " + "\r\n";
             b += "         |         |         " + "\r\n";
             b += "---------+---------+---------" + "\r\n";
             b += "         |         |         " + "\r\n";
-            b += "    7    |    8    |    9    " + "\r\n";
+            b += "    6    |    7    |    8    " + "\r\n";
             b += "         |         |         " + "\r\n";
 
             return b;
@@ -51,8 +70,7 @@ namespace AdventureServer.GameData
                    + "GAME1 = Human as X verse Computer as O.\r\n"
                    + "GAME2 = Computer X verse Human as O.\r\n"
                    + "GAME3 = Homan as X verse Human as O.\r\n"
-                   + "\r\n";
-                   
+                   + "\r\n"; 
         }
 
         private string APIMessage()
@@ -61,7 +79,18 @@ namespace AdventureServer.GameData
                 + "I hope you enjoy the API. The source is available for Review on GitHub. \r\n";  
         }
 
+        // Legacy Constructs
 
+        private string[,] gameBoard = new string[3, 3]
+                                                     { { "0","1","2"},
+                                                     { "3","4","5"},
+                                                     { "6","7","8"} };
+
+
+        private string[,] activeGameBoard = new string[3, 3]
+                                               { { "0","1","2"},
+                                                     { "3","4","5"},
+                                                     { "6","7","8"} };
 
     }
 }
