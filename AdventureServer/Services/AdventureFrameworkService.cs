@@ -11,7 +11,7 @@ namespace AdventureServer.Services.AdventureFramework
     public class AdventureFrameworkService : IPlayAdventure
     {
         // Game 1 
-        private readonly AdventureData.AdventureHouse adventureHouse = new AdventureData.AdventureHouse();
+        private readonly AdventureData.AdventureHouse adventureHouse = new();
 
         // storage for the adventures
         private readonly IMemoryCache _gameCache;
@@ -118,7 +118,7 @@ namespace AdventureServer.Services.AdventureFramework
 
         public List<Game> ControllerEntry_GetGames()
         {
-            List<Game> _games = new List<Game>
+            List<Game> _games = new()
             {
                 new Game {Id =1, Name="Api Adventure House", Ver=".01", Desc="Figure out how to escape from the house."  },
                 new Game {Id =1, Name="Adventure House Part 2!", Ver="00", Desc="Exact same game as API Adventure house but using a different name"}
@@ -696,7 +696,7 @@ namespace AdventureServer.Services.AdventureFramework
 
             List<Message> _querymesssages;
 
-            Random r = new Random(); // picks a random integer between the lower bound(inclusive) and the upper bound(exclusive).
+            Random r = new(); // picks a random integer between the lower bound(inclusive) and the upper bound(exclusive).
 
             _querymesssages = _querymesssages = messages.FindAll(t => t.MessageTag.ToLower() == action.ToLower()).ToList();
 
