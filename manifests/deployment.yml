@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: "sssaks-651d"
+  name: "advserver"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: "sssaks-651d"
+      app: "advserver"
   template:
     metadata:
       labels:
-        app: "sssaks-651d"
+        app: "advserver"
     spec:
       containers:
-        - name: "sssaks-651d"
-          image: "ssscon.azurecr.io/sssaks"
+        - name: "advserver"
+          image: "ssscon.azurecr.io/advserver"
           ports:
           - containerPort: 80
