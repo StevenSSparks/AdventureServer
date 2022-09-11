@@ -14,8 +14,8 @@ jobs:
     - name: Build and push image to ACR
       id: build-image
       run: |
-        docker build "$GITHUB_WORKSPACE/AdventureServer" -f  "AdventureServer/Dockerfile" -t ssscon.azurecr.io/sssaks:${{ github.sha }} --label dockerfile-path=AdventureServer/Dockerfile
-        docker push ssscon.azurecr.io/sssaks:${{ github.sha }}
+        docker build "$GITHUB_WORKSPACE/AdventureServer" -f  "AdventureServer/Dockerfile" -t ssscon.azurecr.io/advserver:${{ github.sha }} --label dockerfile-path=AdventureServer/Dockerfile
+        docker push ssscon.azurecr.io/advserver:${{ github.sha }}
     
     - uses: azure/k8s-set-context@v1
       with:
@@ -46,6 +46,6 @@ jobs:
           manifests/service.yml
           manifests/ingress.yml
         images: |
-          ssscon.azurecr.io/sssaks:${{ github.sha }}
+          ssscon.azurecr.io/advserver:${{ github.sha }}
         imagepullsecrets: |
           sssaksdockerauth
