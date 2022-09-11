@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-    name: "sssaks-651d"
+    name: "advserver"
     labels:
-        app: "sssaks-651d"
+        app: "advserver"
     annotations:
         kubernetes.io/ingress.class: addon-http-application-routing
 spec:
     rules:
-        - host: advsrc-sssaks-651d.5a15826144ae4f289db5.eastus.aksapp.io
+        - host: advsrc-advserver.5a15826144ae4f289db5.eastus.aksapp.io
           http:
             paths:
             - path: /
               backend:
-                serviceName: "sssaks-651d"
+                serviceName: "advserver"
                 servicePort: 80
