@@ -5,7 +5,7 @@ metadata:
     labels:
         app: "advserver"
 spec:
-    type: LoadBalancer
+    type: ClusterIP
     ports:
     - targetPort: 80
       port: 80
