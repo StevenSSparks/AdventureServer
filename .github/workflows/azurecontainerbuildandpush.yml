@@ -34,7 +34,7 @@ jobs:
      - name: Build and push image to ACR
        id: build-image
        run: |
-        docker build "$GITHUB_WORKSPACE/AdventureServer" -f  "AdventureServer/Dockerfile" -t ssscon.azurecr.io/adventureserver:${{ github.sha }} --label dockerfile-path=AdventureServer/Dockerfile
-        docker push ssscon.azurecr.io/adventureserver:${{ github.sha }}
+        docker build "$GITHUB_WORKSPACE/AdventureServer" -f  "AdventureServer/Dockerfile" -t ssscon.azurecr.io/adventureserver:prod} --label dockerfile-path=AdventureServer/Dockerfile
+        docker push ssscon.azurecr.io/adventureserver:prod}
 
       
