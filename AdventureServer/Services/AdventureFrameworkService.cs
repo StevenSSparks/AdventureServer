@@ -949,7 +949,7 @@ namespace AdventureServer.Services.AdventureFramework
             {
                 var _result = GetRoomInventory(9999, p.Items);
 
-                cs.Message = "You pack contains :";
+                cs.Message = "Your pack contains :";
                 if (_result == "") _result = " [Empty]";
                 cs.Message += _result + "\r\n";
                 cs.Valid = true;

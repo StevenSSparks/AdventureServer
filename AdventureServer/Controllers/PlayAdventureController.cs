@@ -49,7 +49,16 @@ namespace AdventureServer.Controllers
             };
 
             //Check to see if the player has an active game
-            string _InstanceID = HttpContext.Session.GetString("InstanceID");
+            string _InstanceID = "";
+
+            try
+            {
+                _InstanceID = HttpContext.Session.GetString("InstanceID");
+            }
+            catch
+            {
+                _InstanceID = "-1";
+            }
 
             if (_InstanceID == "-1") // If no active game then crete a new game
             {

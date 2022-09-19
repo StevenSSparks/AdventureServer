@@ -51,7 +51,12 @@ namespace AdventureServer.AdventureData
                 "Andy Capp",
                 "Top Hatter",
                 "Bat Master",
-                "Red Winter"
+                "Red Winter",
+                "Brian Part-2",
+                "Zar Ruba",
+                "Wer Ner",
+                "Sparks Fly",
+                "Dev Ops"
             };
 
   
