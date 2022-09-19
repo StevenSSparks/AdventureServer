@@ -35,6 +35,6 @@ jobs:
        id: build-image
        run: |
         docker build "$GITHUB_WORKSPACE/AdventureServer" -f  "AdventureServer/Dockerfile" -t ssscon.azurecr.io/adventureserver:prod --label dockerfile-path=AdventureServer/Dockerfile
-        docker push ssscon.azurecr.io/adventureserver:prod}
+        docker push ssscon.azurecr.io/adventureserver:prod
 
       
