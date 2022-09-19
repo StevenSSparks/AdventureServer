@@ -56,7 +56,17 @@ namespace AdventureServer.AdventureData
                 "Zar Ruba",
                 "Wer Ner",
                 "Sparks Fly",
-                "Dev Ops"
+                "Dev Ops",
+                "Brian Boitano",
+                "Buzz Lightyear",
+                "Ham Radio Operator",
+                "Mr. T",
+                "Mrs. T",
+                "Dr Smith",
+                "Alvin",
+                "Simon",
+                "Person X"
+
             };
 
   
