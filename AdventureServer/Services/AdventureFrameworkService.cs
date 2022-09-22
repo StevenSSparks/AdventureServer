@@ -1091,12 +1091,8 @@ namespace AdventureServer.Services.AdventureFramework
 
                     if (item.ActionResult.ToLower() == "fortune")
                     {
-                       
-                        p.Player.Room = Convert.ToInt32(item.ActionValue);
                         p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p);
                         cs.Message = $"You look at the {item.Action} and read: \"{_getfortune.ReturnTimeBasedFortune().phrase}\", The text mysteriously fades and disappears.";
-                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); 
-
                     }
 
 
