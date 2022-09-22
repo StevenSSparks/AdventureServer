@@ -66,7 +66,6 @@ namespace AdventureServer.AdventureData
                 "Alvin",
                 "Simon",
                 "Person X"
-
             };
 
   

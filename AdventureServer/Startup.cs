@@ -51,6 +51,7 @@ namespace AdventureServer
             // adventure sever framework
             services.AddSingleton<IPlayAdventure, AdventureFrameworkService>();
             services.AddTransient<IAppVersionService, AppVersionService>();
+            services.AddSingleton<IGetFortune, GetFortuneService>();
             
 
         }

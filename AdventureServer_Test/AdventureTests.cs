@@ -1,8 +1,11 @@
 using AdventureServer;
 using AdventureServer.Controllers;
+using AdventureServer.Interfaces;
 using AdventureServer.Models;
+using AdventureServer.Services;
 using AdventureServer.Services.AdventureFramework;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Caching.Memory;
 using NUnit.Framework;
 
@@ -17,6 +20,7 @@ namespace AdventureServer_Test
         // private PlayAdventureController _playAdventureController;
         private readonly MemoryCacheOptions mco = new MemoryCacheOptions();
         private IMemoryCache _gameCache;
+        private IGetFortune _getFortune;
 
 
         [SetUp]
@@ -24,8 +28,9 @@ namespace AdventureServer_Test
         {
             
             _gameCache = new MemoryCache(mco);
+            _getFortune = new GetFortuneService();
             _welcomeSontroller = new WelcomeController(new AdventureServer.Services.AppVersionService());
-            _adventureFramework = new AdventureFrameworkService(_gameCache);
+            _adventureFramework = new AdventureFrameworkService(_gameCache, _getFortune);
             _adventureController = new AdventureController(_adventureFramework);
            // _playAdventureController = new PlayAdventureController(_adventureController);
 

@@ -16,9 +16,13 @@ namespace AdventureServer.Services.AdventureFramework
         // storage for the adventures
         private readonly IMemoryCache _gameCache;
 
-        public AdventureFrameworkService(IMemoryCache GameCache)
+        // Fortune Service for Reading the Book 
+        private readonly IGetFortune _getfortune;
+
+        public AdventureFrameworkService(IMemoryCache GameCache, IGetFortune getfortune)
         {
             _gameCache = GameCache;
+            _getfortune = getfortune;
         }
 
         #region Game Cache Management
@@ -30,7 +34,7 @@ namespace AdventureServer.Services.AdventureFramework
               // Keep in cache for this time, reset time if accessed.
               .SetSlidingExpiration(TimeSpan.FromMinutes(8 * 60)); //  8 hours
 
-            _ = _gameCache.Set(p.InstanceID, p, cacheEntryOptions);
+            _ = _gameCache.Set(p.InstanceID, p, cacheEntryOptions); 
 
         }
 
@@ -466,6 +470,8 @@ namespace AdventureServer.Services.AdventureFramework
                 "restart" => "quit",
                 "score" => "points",
                 "result" => "points",
+                "study" => "read",
+                "learn" => "read",
                 _ => cmd,
             };
 
@@ -812,6 +818,7 @@ namespace AdventureServer.Services.AdventureFramework
             // use item commands 
             if (cs.Command == "eat") { (p, cs) = Action_UseItem(p, cs); }
             if (cs.Command == "use") { (p, cs) = Action_UseItem(p, cs); }
+            if (cs.Command == "read") { (p, cs) = Action_UseItem(p, cs); }
             if (cs.Command == "wave") { (p, cs) = Action_UseItem(p, cs); }
             if (cs.Command == "throw") 
                 {
@@ -991,7 +998,7 @@ namespace AdventureServer.Services.AdventureFramework
             return new Tuple<PlayAdventure, CommandState>(p, cs);
         }
 
-        private static Tuple<PlayAdventure, CommandState> Action_UseItem(PlayAdventure p, CommandState cs)
+        private Tuple<PlayAdventure, CommandState> Action_UseItem(PlayAdventure p, CommandState cs)
         {
             var command = cs.Command.ToLower();
             var requesteditem = cs.Modifier.ToLower();
@@ -1080,6 +1087,19 @@ namespace AdventureServer.Services.AdventureFramework
                         p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); // set points for teleport item
 
                     }
+
+
+                    if (item.ActionResult.ToLower() == "fortune")
+                    {
+                       
+                        p.Player.Room = Convert.ToInt32(item.ActionValue);
+                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p);
+                        cs.Message = $"You look at the {item.Action} and read: \"{_getfortune.ReturnTimeBasedFortune().phrase}\", The text mysteriously fades and disappears.";
+                        p.Player = Helper_SetPlayerPoints(false, cs.Modifier, p); 
+
+                    }
+
+
 
                 }
                 else { cs.Valid = false; }
